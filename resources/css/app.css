@@ -1,0 +1,252 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+/*
+|--------------------------------------------------------------------------
+| Design tokens — English Department Alumni Association
+|--------------------------------------------------------------------------
+*/
+
+@theme {
+    /* Typography */
+    --font-serif: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Deep academic navy — primary brand */
+    --color-navy-50: #f1f5fb;
+    --color-navy-100: #e0e9f6;
+    --color-navy-200: #c5d5ee;
+    --color-navy-300: #9cb9e1;
+    --color-navy-400: #6c95d0;
+    --color-navy-500: #4a76c0;
+    --color-navy-600: #385da5;
+    --color-navy-700: #2f4c86;
+    --color-navy-800: #2b416f;
+    --color-navy-900: #1f2f52;
+    --color-navy-950: #15203a;
+
+    /* Burgundy / maroon — secondary brand */
+    --color-maroon-50: #faf0f3;
+    --color-maroon-100: #f4dde4;
+    --color-maroon-200: #e8bccb;
+    --color-maroon-300: #d68fa8;
+    --color-maroon-400: #bf5f82;
+    --color-maroon-500: #a33e64;
+    --color-maroon-600: #872d53;
+    --color-maroon-700: #6e2445;
+    --color-maroon-800: #5a1f3b;
+    --color-maroon-900: #4c1c34;
+    --color-maroon-950: #2c0e1d;
+
+    /* Gold — academic accent, used sparingly */
+    --color-gold-300: #e6c36a;
+    --color-gold-400: #d9ab3f;
+    --color-gold-500: #c7972c;
+    --color-gold-600: #a87a22;
+    --color-gold-700: #865d1e;
+
+    /* Neutral surfaces */
+    --color-cream: #faf7f2;
+    --color-ink: #232830;
+    --color-ink-soft: #4b5563;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        @apply bg-white font-sans text-ink antialiased;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        @apply m-0 p-0;
+    }
+
+    ::selection {
+        @apply bg-navy-800 text-white;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+
+    /* Reusable section container */
+    .container-page {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    /* Section rhythm used across public pages */
+    .section-pad {
+        @apply py-16 sm:py-20 lg:py-24;
+    }
+
+    /* Standard focus ring for accessible interactive elements */
+    .focus-ring {
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+    }
+
+    /* Subtle hover lift for cards */
+    .card-lift {
+        @apply transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50;
+    }
+
+    /* Premium Apple-inspired Card */
+    .premium-card {
+        @apply bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden;
+    }
+
+    /* Premium Button Base */
+    .btn {
+        @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+    
+    .btn-primary {
+        @apply bg-navy-900 text-white hover:bg-navy-800 shadow-sm;
+    }
+
+    .btn-secondary {
+        @apply bg-cream text-ink border border-gray-200 hover:bg-gray-100 hover:border-gray-300;
+    }
+
+    .btn-accent {
+        @apply bg-gold-500 text-white hover:bg-gold-600 shadow-sm;
+    }
+
+    .btn-destructive {
+        @apply bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300;
+    }
+}
+
+@layer utilities {
+
+    /* Decorative academic hairline rule */
+    .rule-accent {
+        @apply h-px w-12 bg-gold-500;
+    }
+}
+
+/* ── Announcement bar scrolling animation ──────────────── */
+
+@keyframes announcement-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.announcement-scroll {
+    animation: announcement-scroll 25s linear infinite;
+}
+
+.announcement-track:hover .announcement-scroll {
+    animation-play-state: paused;
+}
+
+/* ── Glass & Shine System ──────────────────────────────── */
+
+/* Glass card: frosted translucent surface */
+.glass {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-light {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-dark {
+    background: rgba(31, 47, 82, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Shine sweep: animated light streak on hover */
+.shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 45%,
+        rgba(255, 255, 255, 0.18) 50%,
+        rgba(255, 255, 255, 0.08) 55%,
+        transparent 100%
+    );
+    transform: rotate(25deg);
+    transition: left 0.6s ease;
+    pointer-events: none;
+}
+
+.shine:hover::after {
+    left: 125%;
+}
+
+/* Subtle top-edge glow for cards */
+.glow-top {
+    box-shadow:
+        0 -1px 0 0 rgba(230, 195, 106, 0.15),
+        0 1px 3px 0 rgba(0, 0, 0, 0.06),
+        0 1px 2px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glow-top:hover {
+    box-shadow:
+        0 -1px 0 0 rgba(230, 195, 106, 0.3),
+        0 4px 12px -2px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Shimmer loading placeholder */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Navbar glass enhancement */
+.navbar-glass {
+    background: rgba(21, 32, 58, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Footer glass border glow */
+.footer-glow {
+    box-shadow: inset 0 1px 0 0 rgba(230, 195, 106, 0.08);
+}

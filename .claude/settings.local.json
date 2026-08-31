@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/USER/.claude/plugins/marketplaces/**)",
+      "Read(//c/Users/USER/.claude/plugins/**)",
+      "Bash(php -v)",
+      "Bash(composer --version)"
+    ]
+  }
+}
