@@ -2,6 +2,9 @@
 
     @push('head')
         <meta name="robots" content="noindex, nofollow">
+        <meta property="og:title" content="EDAA-KNGC Application {{ $application->application_number }}">
+        <meta property="og:description" content="My membership application to EDAA-KNGC has been submitted!">
+        <meta property="og:type" content="website">
     @endpush
 
     <x-page-header
@@ -16,7 +19,7 @@
 
     <section class="section-pad bg-white">
         <div class="container-page">
-            <div class="mx-auto max-w-xl">
+            <div class="mx-auto max-w-2xl">
                 @if (session('application_submitted'))
                     <div class="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-5 text-green-800" role="status">
                         <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -29,7 +32,123 @@
                     </div>
                 @endif
 
-                <div class="rounded-xl border border-navy-100 bg-white p-8 shadow-sm sm:p-10">
+                {{-- Shareable Welcome Card --}}
+                <div id="welcome-card" class="overflow-hidden rounded-2xl shadow-2xl">
+                    <div class="relative bg-gradient-to-br from-navy-950 via-navy-900 to-maroon-900 px-8 py-10 sm:px-12 sm:py-12">
+                        {{-- Decorative Elements --}}
+                        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+                            <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-gold-400/10 blur-3xl"></div>
+                            <div class="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-maroon-500/10 blur-3xl"></div>
+                            <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-white/5 to-transparent"></div>
+                        </div>
+
+                        <div class="relative z-10">
+                            {{-- Header --}}
+                            <div class="mb-8 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex h-12 w-12 items-center justify-center rounded-lg bg-maroon-700 font-serif text-xs font-bold tracking-wide text-white ring-1 ring-gold-500/60">
+                                        EDAA
+                                    </span>
+                                    <div>
+                                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">EDAA-KNGC</p>
+                                        <p class="text-[10px] text-white/40">English Department Alumni Association</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-white/40">Application</p>
+                                    <p class="font-serif text-sm font-bold text-gold-300">{{ $application->application_number }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Member Info --}}
+                            <div class="flex items-center gap-6">
+                                {{-- Profile Photo --}}
+                                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-full bg-white/10 ring-4 ring-gold-500/30 shadow-lg shadow-gold-500/20">
+                                    @if ($application->profile_photo_url)
+                                        <img src="{{ $application->profile_photo_url }}" alt="{{ $application->full_name }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="flex h-full w-ful items-center justify-center font-serif text-2xl font-bold text-white/60">
+                                            {{ strtoupper(substr($application->full_name, 0, 2)) }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Name & Details --}}
+                                <div class="flex-1 min-w-0">
+                                    <h2 class="font-serif text-2xl font-bold text-white sm:text-3xl">{{ $application->full_name }}</h2>
+                                    @if ($application->batch || $application->graduation_year)
+                                        <p class="mt-1.5 text-sm text-white/60">
+                                            @if ($application->batch)Batch {{ $application->batch }}@endif
+                                            @if ($application->batch && $application->graduation_year) · @endif
+                                            @if ($application->graduation_year)Graduated {{ $application->graduation_year }}@endif
+                                        </p>
+                                    @endif
+                                    @if ($application->profession)
+                                        <p class="mt-1 text-sm text-white/50">{{ $application->profession }}@if ($application->current_organization) at {{ $application->current_organization }}@endif</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Divider --}}
+                            <div class="my-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                            {{-- Status --}}
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Status</p>
+                                    @php
+                                        $statusColor = match($application->status->value) {
+                                            'pending' => 'text-gold-300',
+                                            'under_review' => 'text-blue-300',
+                                            'approved' => 'text-emerald-300',
+                                            'rejected' => 'text-red-300',
+                                            default => 'text-white/70',
+                                        };
+                                    @endphp
+                                    <p class="mt-1 text-lg font-semibold {{ $statusColor }}">{{ $application->status->label() }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Submitted</p>
+                                    <p class="mt-1 text-sm font-medium text-white/70">{{ $application->submitted_at->format('d M Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Bottom Bar --}}
+                    <div class="bg-navy-800 px-8 py-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-gold-400 animate-pulse"></span>
+                            <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">Welcome to the Family</p>
+                        </div>
+                        <p class="text-[10px] text-white/30">edaa.kngc.edu.bd</p>
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <button
+                        onclick="downloadCard()"
+                        class="focus-ring flex flex-1 items-center justify-center gap-2 rounded-lg bg-maroon-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-maroon-800"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Download Card
+                    </button>
+                    <button
+                        onclick="shareCard()"
+                        class="focus-ring flex flex-1 items-center justify-center gap-2 rounded-lg border border-navy-200 bg-white px-6 py-3 text-sm font-medium text-navy-700 shadow-sm transition-colors hover:bg-navy-50"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                        </svg>
+                        Share
+                    </button>
+                </div>
+
+                {{-- Application Details Card --}}
+                <div class="mt-8 rounded-xl border border-navy-100 bg-white p-8 shadow-sm sm:p-10">
                     <div class="text-center">
                         <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-navy-900 font-serif text-lg font-bold text-gold-300">
                             {{ strtoupper(substr($application->application_number, -4)) }}
@@ -43,7 +162,7 @@
                     {{-- Status Badge --}}
                     <div class="mt-6 flex justify-center">
                         @php
-                            $statusColor = match($application->status->value) {
+                            $statusBadge = match($application->status->value) {
                                 'pending' => 'bg-gold-100 text-gold-800 border-gold-300',
                                 'under_review' => 'bg-navy-100 text-navy-800 border-navy-300',
                                 'approved' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
@@ -53,7 +172,7 @@
                                 default => 'bg-navy-100 text-navy-800 border-navy-300',
                             };
                         @endphp
-                        <span class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold {{ $statusColor }}">
+                        <span class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold {{ $statusBadge }}">
                             {{ $application->status->label() }}
                         </span>
                     </div>
@@ -105,4 +224,36 @@
             </div>
         </div>
     </section>
+
+    {{-- html2canvas for card download --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function downloadCard() {
+            const card = document.getElementById('welcome-card');
+            html2canvas(card, {
+                scale: 2,
+                backgroundColor: null,
+                useCORS: true,
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'edaa-kngc-application-{{ $application->application_number }}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function shareCard() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'EDAA-KNGC Application {{ $application->application_number }}',
+                    text: 'My membership application to EDAA-KNGC has been submitted!',
+                    url: window.location.href,
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            }
+        }
+    </script>
 </x-layouts.app>

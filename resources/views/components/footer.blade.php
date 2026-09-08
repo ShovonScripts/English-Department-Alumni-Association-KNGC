@@ -1,4 +1,4 @@
-﻿@php
+@php
     $explore = [
         ['label' => 'About the Association', 'route' => 'about'],
         ['label' => 'Our Alumni', 'route' => 'alumni.index'],
@@ -6,7 +6,9 @@
         ['label' => 'News & Updates', 'route' => 'news.index'],
         ['label' => 'Alumni Stories', 'route' => 'stories.index'],
         ['label' => 'Publications', 'route' => 'publications.index'],
+        ['label' => 'Press Releases', 'route' => 'press-releases.index'],
         ['label' => 'Photo Gallery', 'route' => 'gallery.index'],
+        ['label' => 'Committees', 'route' => 'committees.index'],
         ['label' => 'Become a Member', 'route' => 'membership.apply'],
     ];
 
@@ -21,9 +23,26 @@
     }
 
     $site = config('site');
+    $siteName = \App\Models\SiteSetting::get('site_name') ?: $site['name'];
+    $shortName = \App\Models\SiteSetting::get('site_short_name') ?: $site['short_name'];
+    $logoDark = \App\Models\SiteSetting::get('logo_dark_path');
+    $siteDescription = \App\Models\SiteSetting::get('site_description') ?: $site['description'];
+    $contactEmail = \App\Models\SiteSetting::get('contact_email') ?: $site['email'];
+    $contactPhone = \App\Models\SiteSetting::get('contact_phone') ?: $site['phone'];
+    $contactAddress = \App\Models\SiteSetting::get('contact_address') ?: $site['address'];
+
+    $socialLinks = [
+        'facebook' => \App\Models\SiteSetting::get('social_facebook', ''),
+        'facebook_group' => \App\Models\SiteSetting::get('social_facebook_group', ''),
+        'twitter' => \App\Models\SiteSetting::get('social_twitter', ''),
+        'linkedin' => \App\Models\SiteSetting::get('social_linkedin', ''),
+        'youtube' => \App\Models\SiteSetting::get('social_youtube', ''),
+        'instagram' => \App\Models\SiteSetting::get('social_instagram', ''),
+    ];
 
     $socials = [
         'facebook' => ['label' => 'Facebook', 'path' => 'M13.5 9H16l.5-3h-3V4.5c0-.9.3-1.5 1.6-1.5H16.6V.2C16.3.2 15.3 0 14.1 0 11.5 0 9.7 1.6 9.7 4.4V6H7v3h2.7v9h3.8V9z'],
+        'facebook_group' => ['label' => 'Facebook Group', 'path' => 'M15.75 13.5h-1.5v4.5h-3v4.5h-3v-4.5h-1.5v-4.5h1.5v-3c0-2.485 2.015-4.5 4.5-4.5h1.5v3zm-4.5-7.5a3 3 0 100 6 3 3 0 000-6zm6-1.5a3 3 0 100 6 3 3 0 000-6zm-6 0a3 3 0 100 6 3 3 0 000-6zm6 0a3 3 0 100 6 3 3 0 000-6z'],
         'twitter' => ['label' => 'Twitter / X', 'path' => 'M17.5 3H20l-6.1 7 7.2 9.5h-5.6l-4.4-5.8-5 5.8H4.3l6.5-7.5L3.7 3h5.7l4 5.3L17.5 3zm-1 16h1.6L7.4 4.5H5.7L16.5 19z'],
         'instagram' => ['label' => 'Instagram', 'path' => 'M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 2.3c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.4 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.4.4.7.6 1.2.8.4.2 1 .4 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.4-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.4-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.9a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2zm0 5.9a2.3 2.3 0 110-4.6 2.3 2.3 0 010 4.6zm4.6-6a.8.8 0 11-1.6 0 .8.8 0 011.6 0z'],
         'linkedin' => ['label' => 'LinkedIn', 'path' => 'M6.9 8.6H3.6V20h3.3V8.6zM5.3 7.2a1.9 1.9 0 100-3.8 1.9 1.9 0 000 3.8zM20.4 13.4c0-3.3-1.8-4.9-4.2-4.9-1.9 0-2.8 1.1-3.3 1.8V8.6H9.6V20h3.3v-6c0-1.6.8-2.6 2.1-2.6 1.3 0 1.9.9 1.9 2.6v6h3.5v-6.6z'],
@@ -35,30 +54,34 @@
     <div class="container-page grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-20">
         {{-- Brand --}}
         <div class="lg:col-span-4">
-            <a href="{{ route('home') }}" class="focus-ring inline-flex items-center gap-3 rounded-md" aria-label="{{ $site['name'] }} home">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-maroon-700 font-serif text-sm font-bold tracking-wide text-white ring-1 ring-gold-500/60">
-                    EDAA
-                </span>
+            <a href="{{ route('home') }}" class="focus-ring inline-flex items-center gap-3 rounded-md" aria-label="{{ $siteName }} home">
+                @if ($logoDark)
+                    <img src="{{ Storage::disk('public')->url($logoDark) }}" alt="{{ $shortName }}" class="h-11 w-auto object-contain">
+                @else
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-maroon-700 font-serif text-sm font-bold tracking-wide text-white ring-1 ring-gold-500/60">
+                        EDAA
+                    </span>
+                @endif
                 <span class="leading-tight">
                     <span class="block font-serif text-lg font-semibold tracking-tight text-white">
-                        {{ $site['short_name'] }}
+                        {{ $shortName }}
                     </span>
                     <span class="block text-[11px] font-medium uppercase tracking-widest text-gold-300">
-                        KNGC · Dhaka
+                        Dhaka, Bangladesh
                     </span>
                 </span>
             </a>
 
             <p class="mt-5 max-w-sm text-sm leading-relaxed text-navy-200">
-                {{ $site['description'] }}
+                {{ $siteDescription }}
             </p>
 
             <ul class="mt-6 flex items-center gap-3">
                 @foreach ($socials as $key => $social)
-                    @if (($site['social'][$key] ?? '#') !== '#')
+                    @if (!empty($socialLinks[$key]))
                     <li>
                         <a
-                            href="{{ \App\Support\UrlHelper::safeHref($site['social'][$key]) }}"
+                            href="{{ $socialLinks[$key] }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="{{ $social['label'] }} (opens in a new tab)"
@@ -94,11 +117,11 @@
             <ul class="mt-4 space-y-2.5 text-sm">
                 <li>
                     <a href="{{ route('about') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
-                        About the Association
+                        About EDAA
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('committee.index') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
+                    <a href="{{ route('committees.index') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
                         Executive Committee
                     </a>
                 </li>
@@ -108,8 +131,18 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('member.login') }}" class="focus-ring rounded text-gold-300 font-medium transition-colors hover:text-gold-200">
+                        Member Portal Login &rarr;
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('contact') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
                         Contact Us
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('credits') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
+                        Credits
                     </a>
                 </li>
             </ul>
@@ -123,23 +156,23 @@
                     <svg class="mt-0.5 h-5 w-5 shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" />
                     </svg>
-                    <a href="mailto:{{ $site['email'] }}" class="focus-ring rounded break-all text-navy-200 transition-colors hover:text-gold-300">
-                        {{ $site['email'] }}
+                    <a href="mailto:{{ $contactEmail }}" class="focus-ring rounded break-all text-navy-200 transition-colors hover:text-gold-300">
+                        {{ $contactEmail }}
                     </a>
                 </li>
                 <li class="flex items-start gap-3">
                     <svg class="mt-0.5 h-5 w-5 shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.3a1 1 0 011 .8l.8 3a1 1 0 01-.4 1l-1.6 1.2a12 12 0 005 5l1.2-1.6a1 1 0 011-.4l3 .8a1 1 0 01.8 1V19a2 2 0 01-2 2A16 16 0 013 5z" />
                     </svg>
-                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $site['phone']) }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
-                        {{ $site['phone'] }}
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $contactPhone) }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
+                        {{ $contactPhone }}
                     </a>
                 </li>
                 <li class="flex items-start gap-3">
                     <svg class="mt-0.5 h-5 w-5 shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.7 11.9l-6.8 6.9a2 2 0 01-2.8 0l-3-3a2 2 0 010-2.8l6.9-6.8M14.8 3.2L20.8 9.2m-2-2l-4.5 4.5a4 4 0 00-1 2.1l-.2 1.5a.5.5 0 00.6.6l1.5-.2a4 4 0 002.1-1l4.5-4.5a2 2 0 000-2.8l-2.5-2.5a2 2 0 00-2.8 0z" />
                     </svg>
-                    <span class="leading-relaxed text-navy-200">{{ $site['address'] }}</span>
+                    <span class="leading-relaxed text-navy-200">{{ $contactAddress }}</span>
                 </li>
             </ul>
         </div>

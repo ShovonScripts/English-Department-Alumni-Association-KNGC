@@ -26,8 +26,8 @@
                         </span>
                         <div>
                             <p class="font-semibold text-navy-950">Email</p>
-                            <a href="mailto:{{ config('site.email') }}" class="focus-ring rounded text-sm text-ink-soft transition-colors hover:text-maroon-700">
-                                {{ config('site.email') }}
+                            <a href="mailto:{{ \App\Models\SiteSetting::get('contact_email') ?: config('site.email') }}" class="focus-ring rounded text-sm text-ink-soft transition-colors hover:text-maroon-700">
+                                {{ \App\Models\SiteSetting::get('contact_email') ?: config('site.email') }}
                             </a>
                         </div>
                     </li>
@@ -39,8 +39,8 @@
                         </span>
                         <div>
                             <p class="font-semibold text-navy-950">Phone</p>
-                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', config('site.phone')) }}" class="focus-ring rounded text-sm text-ink-soft transition-colors hover:text-maroon-700">
-                                {{ config('site.phone') }}
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', \App\Models\SiteSetting::get('contact_phone') ?: config('site.phone')) }}" class="focus-ring rounded text-sm text-ink-soft transition-colors hover:text-maroon-700">
+                                {{ \App\Models\SiteSetting::get('contact_phone') ?: config('site.phone') }}
                             </a>
                         </div>
                     </li>
@@ -52,7 +52,7 @@
                         </span>
                         <div>
                             <p class="font-semibold text-navy-950">Address</p>
-                            <p class="text-sm leading-relaxed text-ink-soft">{{ config('site.address') }}</p>
+                            <p class="text-sm leading-relaxed text-ink-soft">{{ \App\Models\SiteSetting::get('contact_address') ?: config('site.address') }}</p>
                         </div>
                     </li>
                 </ul>
@@ -186,17 +186,20 @@
         </div>
     </section>
 
-    {{-- Map placeholder --}}
+    {{-- Map --}}
     <section class="bg-cream py-14 sm:py-16">
         <div class="container-page">
-            <div class="flex h-64 items-center justify-center rounded-xl border border-navy-100 bg-gradient-to-br from-navy-100 to-navy-200 text-navy-500">
-                <div class="text-center">
-                    <svg class="mx-auto h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.4-2.6A1 1 0 013 16.5V5.7a1 1 0 01.9-1L9 6l6-2 5.4 2.6a1 1 0 01.6.9v10.8a1 1 0 01-.9 1L15 18l-6 2zM9 20V6m6 12V6" />
-                    </svg>
-                    <p class="mt-3 font-semibold">Interactive map coming soon</p>
-                    <p class="mt-1 text-sm">{{ config('site.address') }}</p>
-                </div>
+            <div class="overflow-hidden rounded-xl border border-navy-100 shadow-sm">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d280.9356689526077!2d90.4130499278282!3d23.709710031672397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b983c2cf0e3b%3A0xca6aab08df5b2a9f!2sDepartment%20of%20English%2C%20Kabi%20Nazrul%20Govt%20College.!5e1!3m2!1sen!2sbd!4v1788756987967!5m2!1sen!2sbd"
+                    width="100%"
+                    height="450"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    title="Department of English, Kabi Nazrul Govt. College"
+                ></iframe>
             </div>
         </div>
     </section>

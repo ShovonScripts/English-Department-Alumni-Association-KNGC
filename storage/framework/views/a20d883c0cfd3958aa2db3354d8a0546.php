@@ -1,0 +1,148 @@
+<?php if (isset($component)) { $__componentOriginalc8c9fd5d7827a77a31381de67195f0c3 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalc8c9fd5d7827a77a31381de67195f0c3 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.admin','data' => ['title' => 'Expense Categories']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.admin'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Expense Categories']); ?>
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight text-navy-950">Expense Categories</h1>
+            <p class="mt-1 text-sm text-ink-soft">
+                Classifications for association spending. Categories with recorded expenses cannot be deleted.
+            </p>
+        </div>
+        <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['href' => ''.e(route('admin.expense-categories.create')).'','variant' => 'gold']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['href' => ''.e(route('admin.expense-categories.create')).'','variant' => 'gold']); ?>Add Category <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+    </div>
+
+    <?php if(session('status')): ?>
+        <div class="mb-6 flex items-center gap-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
+            <?php echo e(session('status')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    <?php if(session('warning')): ?>
+        <div class="mb-6 flex items-center gap-3 rounded-md border border-gold-500/50 bg-gold-500/10 px-4 py-3 text-sm text-gold-700" role="alert">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" />
+            </svg>
+            <?php echo e(session('warning')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    <?php if($categories->count()): ?>
+        <div class="overflow-hidden rounded-lg border border-navy-100 bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-navy-100 text-sm">
+                    <thead class="bg-cream">
+                        <tr>
+                            <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Category</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Description</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Expenses</th>
+                            <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Status</th>
+                            <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-ink-soft">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-navy-50">
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <tr class="transition-colors hover:bg-cream/60">
+                                <td class="px-6 py-4">
+                                    <span class="font-semibold text-navy-950"><?php echo e($category->name); ?></span>
+                                    <span class="block text-xs text-ink-soft">Sort order: <?php echo e($category->sort_order); ?></span>
+                                </td>
+                                <td class="max-w-xs px-6 py-4 text-ink-soft"><?php echo e(Str::limit($category->description, 80) ?: '—'); ?></td>
+                                <td class="px-6 py-4 text-ink-soft"><?php echo e(number_format($category->expenses_count)); ?></td>
+                                <td class="px-6 py-4">
+                                    <?php if($category->is_active): ?>
+                                        <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-800">Active</span>
+                                    <?php else: ?>
+                                        <span class="inline-flex rounded-full bg-maroon-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-maroon-800">Inactive</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="<?php echo e(route('admin.expense-categories.edit', $category)); ?>" class="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-md text-navy-600 transition-colors hover:bg-navy-50 hover:text-navy-900" aria-label="Edit <?php echo e($category->name); ?>">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 15l-4 1 1-4 9.6-9.4z" />
+                                            </svg>
+                                        </a>
+                                        <form method="POST" action="<?php echo e(route('admin.expense-categories.destroy', $category)); ?>" onsubmit="return confirm('Delete category <?php echo e($category->name); ?>? Only categories without expenses can be deleted.');">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
+                                            <button type="submit" class="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-md text-maroon-700 transition-colors hover:bg-maroon-50" aria-label="Delete <?php echo e($category->name); ?>">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.9 12.1A2 2 0 0116.1 21H7.9a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6M4 7h16M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="border-t border-navy-100 px-6 py-4">
+                <?php echo e($categories->links()); ?>
+
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="mt-8">
+            <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'No expense categories','description' => 'Create the first category so association expenses can be classified.','actionLabel' => 'Add Category','actionHref' => ''.e(route('admin.expense-categories.create')).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('empty-state'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'No expense categories','description' => 'Create the first category so association expenses can be classified.','action_label' => 'Add Category','action_href' => ''.e(route('admin.expense-categories.create')).'']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal074a021b9d42f490272b5eefda63257c)): ?>
+<?php $attributes = $__attributesOriginal074a021b9d42f490272b5eefda63257c; ?>
+<?php unset($__attributesOriginal074a021b9d42f490272b5eefda63257c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal074a021b9d42f490272b5eefda63257c)): ?>
+<?php $component = $__componentOriginal074a021b9d42f490272b5eefda63257c; ?>
+<?php unset($__componentOriginal074a021b9d42f490272b5eefda63257c); ?>
+<?php endif; ?>
+        </div>
+    <?php endif; ?>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalc8c9fd5d7827a77a31381de67195f0c3)): ?>
+<?php $attributes = $__attributesOriginalc8c9fd5d7827a77a31381de67195f0c3; ?>
+<?php unset($__attributesOriginalc8c9fd5d7827a77a31381de67195f0c3); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc8c9fd5d7827a77a31381de67195f0c3)): ?>
+<?php $component = $__componentOriginalc8c9fd5d7827a77a31381de67195f0c3; ?>
+<?php unset($__componentOriginalc8c9fd5d7827a77a31381de67195f0c3); ?>
+<?php endif; ?>
+<?php /**PATH C:\xampp\htdocs\ProDo\EDAA\resources\views\admin\expense-categories\index.blade.php ENDPATH**/ ?>

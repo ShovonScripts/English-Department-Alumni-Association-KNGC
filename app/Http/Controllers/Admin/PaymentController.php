@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
-use App\Models\FeePlan;
 use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Payment;
@@ -17,14 +16,13 @@ class PaymentController extends Controller
     {
         $search = trim((string) $request->query('search'));
         $status = $request->query('status');
-        $feePlanId = $request->query('fee_plan_id');
         $typeId = $request->query('membership_type_id');
         $membershipId = $request->query('membership_id');
         $dateFrom = $request->query('date_from');
         $dateTo = $request->query('date_to');
 
         $query = Payment::query()
-            ->with(['membership.alumni', 'membership.type', 'feePlan', 'recordedBy'])
+            ->with(['membership.alumni', 'membership.type', 'recordedBy'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                 $query->where('payment_number', 'like', "%{$search}%")
                     ->orWhere('reference', 'like', "%{$search}%")
@@ -32,7 +30,6 @@ class PaymentController extends Controller
                     ->orWhereHas('membership', fn ($q) => $q->where('membership_number', 'like', "%{$search}%"));
             }))
             ->when($status, fn ($query, $value) => $query->where('status', $value))
-            ->when($feePlanId, fn ($query, $value) => $query->forFeePlan((int) $value))
             ->when($typeId, fn ($query, $value) => $query->whereHas(
                 'membership',
                 fn ($q) => $q->where('membership_type_id', (int) $value)
@@ -41,8 +38,6 @@ class PaymentController extends Controller
             ->when($dateFrom, fn ($query, $value) => $query->whereDate('paid_at', '>=', $value))
             ->when($dateTo, fn ($query, $value) => $query->whereDate('paid_at', '<=', $value));
 
-        // Administrative summaries honour the active filters but always
-        // exclude void/waived records from collected cash.
         $totals = (clone $query)->valid()->toBase()
             ->selectRaw('COUNT(*) as count, COALESCE(SUM(amount), 0) as total')
             ->first();
@@ -54,7 +49,6 @@ class PaymentController extends Controller
             'filters' => [
                 'search' => $search,
                 'status' => $status,
-                'fee_plan_id' => $feePlanId,
                 'membership_type_id' => $typeId,
                 'membership_id' => $membershipId,
                 'date_from' => $dateFrom,
@@ -64,7 +58,6 @@ class PaymentController extends Controller
             'validCount' => (int) ($totals->count ?? 0),
             'statuses' => PaymentStatus::cases(),
             'types' => MembershipType::query()->ordered()->get(),
-            'feePlans' => FeePlan::query()->ordered()->get(),
             'filterMembership' => $membershipId ? Membership::query()->with('alumni')->find($membershipId) : null,
         ]);
     }
@@ -79,7 +72,6 @@ class PaymentController extends Controller
 
         return view('admin.payments.create', [
             'memberships' => $memberships,
-            'feePlans' => FeePlan::query()->ordered()->get(),
             'statuses' => [PaymentStatus::Paid, PaymentStatus::Partial, PaymentStatus::Waived],
             'preselectedMembershipId' => $request->query('membership_id'),
         ]);
@@ -90,13 +82,6 @@ class PaymentController extends Controller
         $validated = $request->validate($this->rules());
 
         $membership = Membership::query()->findOrFail($validated['membership_id']);
-        $plan = FeePlan::query()->findOrFail($validated['fee_plan_id']);
-
-        if ((int) $plan->membership_type_id !== (int) $membership->membership_type_id) {
-            return back()->withInput()->withErrors([
-                'fee_plan_id' => 'The selected fee plan does not belong to this member’s membership type.',
-            ]);
-        }
 
         $payment = Payment::create([
             ...$validated,
@@ -105,28 +90,18 @@ class PaymentController extends Controller
             'recorded_by' => $request->user()->id,
         ]);
 
-        $obligation = Payment::obligationFor($membership->id, $plan);
+        $membership->recalculateTier();
 
-        $redirect = redirect()->route('admin.payments.show', $payment);
-
-        if ($obligation['overpaid'] > 0) {
-            $redirect->with('warning', 'Overpayment detected: ৳'.number_format($obligation['overpaid']).' collected above the applicable fee. The record is kept accurate; no refund has been created.');
-        }
-
-        return $redirect->with('status', "Payment {$payment->payment_number} recorded.");
+        return redirect()->route('admin.payments.show', $payment)
+            ->with('status', "Payment {$payment->payment_number} recorded.");
     }
 
     public function show(Payment $payment)
     {
-        $payment->load(['membership.alumni', 'membership.type', 'membership.tier', 'feePlan.membershipType', 'recordedBy']);
-
-        // Totals for this member+plan include every valid payment; void and
-        // waived records are excluded by the scopes themselves.
-        $obligation = Payment::obligationFor($payment->membership_id, $payment->feePlan);
+        $payment->load(['membership.alumni', 'membership.type', 'membership.tier', 'recordedBy']);
 
         return view('admin.payments.show', [
             'payment' => $payment,
-            'obligation' => $obligation,
         ]);
     }
 
@@ -135,7 +110,7 @@ class PaymentController extends Controller
         abort_if($payment->status === PaymentStatus::Void, 403, 'Voided payments cannot be edited.');
 
         return view('admin.payments.edit', [
-            'payment' => $payment->load(['membership.alumni', 'membership.type', 'feePlan']),
+            'payment' => $payment->load(['membership.alumni', 'membership.type']),
             'memberships' => Membership::query()
                 ->where(fn ($q) => $q
                     ->where('status', Membership::STATUS_ACTIVE)
@@ -143,7 +118,6 @@ class PaymentController extends Controller
                 ->with(['alumni', 'type'])
                 ->orderBy('membership_number')
                 ->get(),
-            'feePlans' => FeePlan::query()->ordered()->get(),
             'statuses' => [PaymentStatus::Paid, PaymentStatus::Partial, PaymentStatus::Waived],
         ]);
     }
@@ -154,9 +128,7 @@ class PaymentController extends Controller
 
         $validated = $request->validate($this->rules());
 
-        // Financial relationships are immutable after creation: membership
-        // and fee plan can never be reassigned. Void + re-record instead.
-        unset($validated['membership_id'], $validated['fee_plan_id']);
+        unset($validated['membership_id']);
 
         $payment->update($validated);
 
@@ -165,9 +137,6 @@ class PaymentController extends Controller
             ->with('status', "Payment {$payment->payment_number} updated.");
     }
 
-    /**
-     * Audit-safe invalidation: never hard-delete financial history.
-     */
     public function void(Request $request, Payment $payment)
     {
         if ($payment->status === PaymentStatus::Void) {
@@ -187,21 +156,17 @@ class PaymentController extends Controller
             'void_reason' => $validated['void_reason'],
         ])->save();
 
+        $payment->membership->recalculateTier();
+
         return redirect()
             ->route('admin.payments.show', $payment)
             ->with('status', "Payment {$payment->payment_number} voided. The record is retained for audit purposes.");
     }
 
-    /**
-     * Validation rules shared by store and update.
-     *
-     * @return array<string, mixed>
-     */
     protected function rules(): array
     {
         return [
             'membership_id' => ['required', 'integer', Rule::exists('memberships', 'id')],
-            'fee_plan_id' => ['required', 'integer', Rule::exists('fee_plans', 'id')],
             'amount' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
             'status' => ['required', Rule::in([PaymentStatus::Paid->value, PaymentStatus::Partial->value, PaymentStatus::Waived->value])],
             'paid_at' => ['required', 'date', 'before_or_equal:today'],

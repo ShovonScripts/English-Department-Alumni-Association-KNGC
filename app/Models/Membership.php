@@ -146,4 +146,31 @@ class Membership extends Model
             && $this->is_public === true
             && $this->show_on_leaderboard === true;
     }
+
+    /**
+     * Recalculate and assign the membership tier based on verified
+     * contribution total. Returns the new tier or null if no tier matches.
+     */
+    public function recalculateTier(): ?MembershipTier
+    {
+        $total = $this->verifiedContributionTotal();
+
+        $tier = MembershipTier::query()
+            ->active()
+            ->where('min_contribution', '<=', $total)
+            ->where(function ($query) use ($total) {
+                $query->whereNull('max_contribution')
+                    ->orWhere('max_contribution', '>=', $total);
+            })
+            ->orderByDesc('min_contribution')
+            ->first();
+
+        $newTierId = $tier?->id;
+
+        if ($this->membership_tier_id !== $newTierId) {
+            $this->update(['membership_tier_id' => $newTierId]);
+        }
+
+        return $tier;
+    }
 }

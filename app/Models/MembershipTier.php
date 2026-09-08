@@ -17,6 +17,8 @@ class MembershipTier extends Model
         'slug',
         'badge_label',
         'description',
+        'min_contribution',
+        'max_contribution',
         'is_active',
         'sort_order',
     ];
@@ -24,6 +26,8 @@ class MembershipTier extends Model
     protected function casts(): array
     {
         return [
+            'min_contribution' => 'decimal:2',
+            'max_contribution' => 'decimal:2',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];

@@ -93,7 +93,7 @@
                     class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800"
                 >
             </div>
-            <p class="mt-2 text-xs text-ink-soft">JPEG, PNG or WebP, up to 2MB.</p>
+            <p class="mt-2 text-xs text-ink-soft">JPEG, PNG or WebP, up to 8MB.</p>
             @error('cover_image')
                 <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
             @enderror

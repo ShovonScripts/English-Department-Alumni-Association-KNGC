@@ -96,6 +96,7 @@
                             />
                             Remember me
                         </label>
+                        <a href="{{ route('member.password.request') }}" class="text-sm font-medium text-maroon-700 hover:text-maroon-800">Forgot password?</a>
                     </div>
 
                     <button

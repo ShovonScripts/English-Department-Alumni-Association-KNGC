@@ -3,7 +3,7 @@
         <div>
             <h1 class="font-serif text-3xl font-semibold tracking-tight text-navy-950">Membership Tiers</h1>
             <p class="mt-1 text-sm text-ink-soft">
-                Recognition tiers for contributing members. Contribution thresholds arrive with the leaderboard feature.
+                Recognition tiers for contributing members. Tiers are auto-assigned based on total verified contributions.
             </p>
         </div>
         <x-button href="{{ route('admin.membership-tiers.create') }}" variant="gold">Add Tier</x-button>
@@ -35,8 +35,9 @@
                         <tr class="border-b border-navy-100 bg-navy-50/60 text-xs uppercase tracking-wider text-ink-soft">
                             <th class="px-6 py-3.5 font-semibold">Tier</th>
                             <th class="px-6 py-3.5 font-semibold">Badge Label</th>
+                            <th class="px-6 py-3.5 font-semibold text-right">Min (৳)</th>
+                            <th class="px-6 py-3.5 font-semibold text-right">Max (৳)</th>
                             <th class="px-6 py-3.5 font-semibold">Members</th>
-                            <th class="px-6 py-3.5 font-semibold">Sort Order</th>
                             <th class="px-6 py-3.5 font-semibold">Status</th>
                             <th class="px-6 py-3.5 text-right font-semibold">Actions</th>
                         </tr>
@@ -53,8 +54,9 @@
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center gap-1.5 rounded-full border border-gold-500/50 bg-gold-500/15 px-2.5 py-1 text-xs font-semibold uppercase tracking-widest text-gold-700">{{ $tier->badge_label }}</span>
                                 </td>
+                                <td class="px-6 py-4 text-right font-mono text-sm text-navy-950">{{ number_format($tier->min_contribution) }}</td>
+                                <td class="px-6 py-4 text-right font-mono text-sm text-navy-950">{{ $tier->max_contribution !== null ? number_format($tier->max_contribution) : '—' }}</td>
                                 <td class="px-6 py-4 text-navy-950">{{ $tier->memberships_count }}</td>
-                                <td class="px-6 py-4 text-navy-950">{{ $tier->sort_order }}</td>
                                 <td class="px-6 py-4">
                                     @if ($tier->is_active)
                                         <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">

@@ -32,6 +32,24 @@
         </div>
 
         <div>
+            <label for="min_contribution" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Minimum Contribution (৳)</label>
+            <input type="number" id="min_contribution" name="min_contribution" value="{{ old('min_contribution', $tier?->min_contribution ?? 0) }}" min="0" step="0.01" class="{{ $inputClass }} {{ $errors->has('min_contribution') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : '' }}">
+            <p class="mt-1 text-xs text-ink-soft">Auto-assigned when total contributions reach this amount.</p>
+            @error('min_contribution')
+                <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="max_contribution" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Maximum Contribution (৳)</label>
+            <input type="number" id="max_contribution" name="max_contribution" value="{{ old('max_contribution', $tier?->max_contribution) }}" min="0" step="0.01" placeholder="Leave empty for unlimited" class="{{ $inputClass }} {{ $errors->has('max_contribution') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : '' }}">
+            <p class="mt-1 text-xs text-ink-soft">Leave empty if this is the highest tier (no upper limit).</p>
+            @error('max_contribution')
+                <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
             <label for="sort_order" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Sort Order</label>
             <input type="number" id="sort_order" name="sort_order" value="{{ old('sort_order', $tier?->sort_order ?? 0) }}" min="0" class="{{ $inputClass }}">
             @error('sort_order')

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\GalleryAlbum;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class GalleryAlbumController extends Controller
@@ -80,12 +80,12 @@ class GalleryAlbumController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($galleryAlbum->cover_image) {
-                Storage::disk('public')->delete($galleryAlbum->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($galleryAlbum->cover_image, $galleryAlbum->id, 'gallery_albums');
             }
             $validated['cover_image'] = $request->file('cover_image')->store('gallery', 'public');
         } elseif ($request->boolean('clear_image')) {
             if ($galleryAlbum->cover_image) {
-                Storage::disk('public')->delete($galleryAlbum->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($galleryAlbum->cover_image, $galleryAlbum->id, 'gallery_albums');
             }
             $validated['cover_image'] = null;
         }
@@ -100,12 +100,12 @@ class GalleryAlbumController extends Controller
     {
         foreach ($galleryAlbum->photos as $photo) {
             if ($photo->image) {
-                Storage::disk('public')->delete($photo->image);
+                SharedFileGuard::deleteIfUnreferenced($photo->image, $photo->id, 'gallery_photos');
             }
         }
 
         if ($galleryAlbum->cover_image) {
-            Storage::disk('public')->delete($galleryAlbum->cover_image);
+            SharedFileGuard::deleteIfUnreferenced($galleryAlbum->cover_image, $galleryAlbum->id, 'gallery_albums');
         }
 
         $galleryAlbum->delete();
@@ -122,7 +122,7 @@ class GalleryAlbumController extends Controller
             'event_id' => ['nullable', 'exists:events,id'],
             'status' => ['required', Rule::in([GalleryAlbum::STATUS_PUBLISHED, GalleryAlbum::STATUS_HIDDEN])],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048', Rule::dimensions()->maxWidth(4000)->maxHeight(4000)],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:8192', Rule::dimensions()->maxWidth(5000)->maxHeight(5000)],
         ];
     }
 }

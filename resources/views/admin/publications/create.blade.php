@@ -1,4 +1,4 @@
-﻿<x-layouts.admin title="Add Publication">
+<x-layouts.admin title="Add Publication">
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="font-serif text-3xl font-semibold tracking-tight text-navy-950">Add Publication</h1>

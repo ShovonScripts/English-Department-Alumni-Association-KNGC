@@ -1,34 +1,55 @@
 <x-layouts.app :title="'Edit Profile'">
-    <section class="bg-navy-950 py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="font-serif text-3xl font-bold text-white">Edit Profile</h1>
-            <p class="mt-2 text-sm text-white/60">Update your personal and professional information</p>
+    {{-- Hero Section --}}
+    <section class="relative bg-navy-950 py-14 overflow-hidden">
+        <div class="absolute inset-0 hero-gradient-mesh"></div>
+        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-white">Edit Profile</h1>
+                    <p class="mt-1.5 text-sm text-white/50">Update your personal and professional information</p>
+                </div>
+                <a href="{{ route('member.profile') }}" class="focus-ring inline-flex items-center gap-1.5 rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 ring-1 ring-white/10 transition-all hover:bg-white/15">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z" /></svg>
+                    View Profile
+                </a>
+            </div>
         </div>
     </section>
 
-    <section class="py-10">
+    {{-- Main Container --}}
+    <section class="py-8">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <aside class="lg:col-span-1">
-                    <div class="rounded-lg border border-navy-100 bg-white p-4 shadow-sm">
+                    <div class="rounded-xl border border-navy-100/60 bg-white p-3 shadow-sm sticky top-24">
                         <x-member.sidebar />
                     </div>
                 </aside>
 
                 <main class="lg:col-span-3 space-y-6">
+                    {{-- Messages --}}
                     @if ($errors->any())
-                        <div class="rounded-md border border-red-200 bg-red-50 p-4">
-                            <ul class="list-inside list-disc space-y-1 text-sm text-red-700">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                        <div class="rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 mt-0.5">
+                                <svg class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-red-800">Please fix the following errors:</p>
+                                <ul class="mt-1 list-inside list-disc space-y-0.5 text-sm text-red-700">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
                     @endif
 
                     @if (session('success'))
-                        <div class="rounded-md border border-emerald-200 bg-emerald-50 p-4">
-                            <p class="text-sm text-emerald-800">{{ session('success') }}</p>
+                        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 flex items-center gap-3">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                                <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                            </div>
+                            <p class="text-sm font-medium text-emerald-800">{{ session('success') }}</p>
                         </div>
                     @endif
 
@@ -38,9 +59,10 @@
 
                         {{-- Profile Photo --}}
                         <div class="premium-card p-6" x-data="photoPreview()">
-                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-4">Profile Photo</h2>
+                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Profile Photo</h2>
+                            <p class="text-sm text-ink-soft mb-5">This appears on your public profile and membership card.</p>
                             <div class="flex items-start gap-6">
-                                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-full bg-navy-100 ring-2 ring-navy-200">
+                                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-full bg-navy-100 ring-2 ring-navy-200 shadow-sm">
                                     <img x-show="previewUrl" :src="previewUrl" alt="Preview" class="h-full w-full object-cover">
                                     <div x-show="!previewUrl" class="h-full w-full">
                                         @if ($alumni->profile_photo)
@@ -55,10 +77,10 @@
                                 <div class="flex-1">
                                     <label for="profile_photo" class="block text-sm font-medium text-navy-900">Upload new photo</label>
                                     <input type="file" id="profile_photo" name="profile_photo" accept="image/*" @change="updatePreview"
-                                           class="mt-1.5 block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-maroon-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-maroon-700 hover:file:bg-maroon-100" />
-                                    <p class="mt-1 text-xs text-ink-soft">JPG, PNG, or WebP. Max 2MB.</p>
+                                           class="mt-1.5 block w-full text-sm text-ink-soft file:mr-4 file:rounded-lg file:border-0 file:bg-maroon-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-maroon-700 hover:file:bg-maroon-100 file:transition-colors" />
+                                    <p class="mt-1.5 text-xs text-ink-soft">JPG, PNG, or WebP. Max 2MB.</p>
                                     @if ($alumni->profile_photo)
-                                        <label class="mt-2 flex items-center gap-2 text-sm text-navy-700">
+                                        <label class="mt-3 flex items-center gap-2 text-sm text-navy-700 cursor-pointer">
                                             <input type="checkbox" name="remove_photo" value="1" class="h-4 w-4 rounded border-navy-300 text-gold-500 focus:ring-gold-500" />
                                             Remove current photo
                                         </label>
@@ -67,145 +89,148 @@
                             </div>
                         </div>
 
-                        {{-- Personal Information --}}
+                        {{-- Contact Information --}}
                         <div class="premium-card p-6">
-                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-4">Personal Information</h2>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Contact Information</h2>
+                            <p class="text-sm text-ink-soft mb-5">How other members and the admin team can reach you.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label for="phone" class="block text-sm font-medium text-navy-900">Phone</label>
-                                    <input type="text" id="phone" name="phone" value="{{ old('phone', $alumni->phone) }}"
-                                           class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required
+                                           class="input-field" />
+                                    <p class="mt-1.5 text-xs text-ink-soft">Used for login. Contact admin if you lose access.</p>
                                 </div>
-                                <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div>
-                                        <label for="city" class="block text-sm font-medium text-navy-900">City</label>
-                                        <input type="text" id="city" name="city" value="{{ old('city', $alumni->city) }}"
-                                               class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
-                                    </div>
-                                    <div>
-                                        <label for="country" class="block text-sm font-medium text-navy-900">Country</label>
-                                        <input type="text" id="country" name="country" value="{{ old('country', $alumni->country) }}"
-                                               class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
-                                    </div>
+                                <div>
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="text" id="phone" name="phone" value="{{ old('phone', $alumni->phone) }}" placeholder="+880..."
+                                           class="input-field" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Location --}}
+                        <div class="premium-card p-6">
+                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Location</h2>
+                            <p class="text-sm text-ink-soft mb-5">Where you're based now.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" id="city" name="city" value="{{ old('city', $alumni->city) }}" placeholder="e.g. Dhaka"
+                                           class="input-field" />
+                                </div>
+                                <div>
+                                    <label for="country" class="form-label">Country</label>
+                                    <input type="text" id="country" name="country" value="{{ old('country', $alumni->country) }}" placeholder="e.g. Bangladesh"
+                                           class="input-field" />
                                 </div>
                             </div>
                         </div>
 
                         {{-- Professional Information --}}
                         <div class="premium-card p-6">
-                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-4">Professional Information</h2>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Professional Information</h2>
+                            <p class="text-sm text-ink-soft mb-5">Your career details and online presence.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label for="profession" class="block text-sm font-medium text-navy-900">Profession / Title</label>
-                                    <input type="text" id="profession" name="profession" value="{{ old('profession', $alumni->profession) }}"
-                                           class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
+                                    <label for="profession" class="form-label">Profession / Title</label>
+                                    <input type="text" id="profession" name="profession" value="{{ old('profession', $alumni->profession) }}" placeholder="e.g. Software Engineer"
+                                           class="input-field" />
                                 </div>
                                 <div>
-                                    <label for="organization" class="block text-sm font-medium text-navy-900">Organization</label>
-                                    <input type="text" id="organization" name="organization" value="{{ old('organization', $alumni->organization) }}"
-                                           class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
+                                    <label for="organization" class="form-label">Organization</label>
+                                    <input type="text" id="organization" name="organization" value="{{ old('organization', $alumni->organization) }}" placeholder="e.g. Google"
+                                           class="input-field" />
                                 </div>
                                 <div>
-                                    <label for="website_url" class="block text-sm font-medium text-navy-900">Website URL</label>
+                                    <label for="website_url" class="form-label">Website URL</label>
                                     <input type="url" id="website_url" name="website_url" value="{{ old('website_url', $alumni->website_url) }}" placeholder="https://"
-                                           class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
+                                           class="input-field" />
                                 </div>
                                 <div>
-                                    <label for="linkedin_url" class="block text-sm font-medium text-navy-900">LinkedIn URL</label>
+                                    <label for="linkedin_url" class="form-label">LinkedIn URL</label>
                                     <input type="url" id="linkedin_url" name="linkedin_url" value="{{ old('linkedin_url', $alumni->linkedin_url) }}" placeholder="https://linkedin.com/in/..."
-                                           class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring" />
+                                           class="input-field" />
                                 </div>
                             </div>
                         </div>
 
                         {{-- About You --}}
                         <div class="premium-card p-6">
-                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-4">About You</h2>
+                            <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">About You</h2>
+                            <p class="text-sm text-ink-soft mb-5">A short bio visible on your public profile.</p>
                             <div>
-                                <label for="bio" class="block text-sm font-medium text-navy-900">Bio</label>
-                                <textarea id="bio" name="bio" rows="4"
-                                          class="mt-1.5 block w-full rounded-lg border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-ink-soft focus-ring"
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea id="bio" name="bio" rows="4" maxlength="1000"
+                                          class="input-field resize-none"
                                           placeholder="Tell us a bit about yourself...">{{ old('bio', $alumni->bio) }}</textarea>
+                                <p class="mt-1.5 text-xs text-ink-soft">Max 1000 characters. <span x-text="document.getElementById('bio').value.length" class="font-medium text-navy-600">0</span>/1000</p>
                             </div>
                         </div>
 
+                        {{-- Submit --}}
                         <div class="flex items-center gap-3 justify-end">
                             <a href="{{ route('member.profile') }}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary gap-2">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                Save Changes
+                            </button>
                         </div>
                     </form>
 
-                    {{-- Protected Fields --}}
+                    {{-- Authoritative Records --}}
                     <div class="premium-card p-6" x-data="{ openCorrection: false, correctionField: '', fieldLabel: '' }">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="font-serif text-lg font-semibold text-navy-950">Authoritative Records</h2>
-                        </div>
+                        <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Authoritative Records</h2>
                         <p class="text-sm text-ink-soft mb-6">These fields are tied to official alumni records and cannot be directly modified. If there is an error, you may request a correction.</p>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-ink-soft">Full Name</p>
-                                <div class="mt-1 flex items-center justify-between bg-navy-50 px-3 py-2 rounded border border-navy-100">
-                                    <span class="text-sm text-navy-900">{{ $alumni->full_name }}</span>
-                                    <button @click="openCorrection = true; correctionField = 'full_name'; fieldLabel = 'Full Name'" type="button" class="text-xs font-medium text-maroon-700 hover:underline">Request Correction</button>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @foreach([
+                                ['field' => 'full_name', 'label' => 'Full Name', 'value' => $alumni->full_name],
+                                ['field' => 'student_id', 'label' => 'Student ID', 'value' => $alumni->student_id ?: '-'],
+                                ['field' => 'batch', 'label' => 'Batch', 'value' => $alumni->batch ?: '-'],
+                                ['field' => 'graduation_year', 'label' => 'Graduation Year', 'value' => $alumni->graduation_year ?: '-'],
+                            ] as $item)
+                                <div class="rounded-xl bg-navy-50/50 border border-navy-100 px-4 py-3">
+                                    <p class="text-[11px] font-semibold uppercase tracking-wider text-ink-soft mb-1">{{ $item['label'] }}</p>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-sm font-medium text-navy-900 truncate">{{ $item['value'] }}</span>
+                                        <button @click="openCorrection = true; correctionField = '{{ $item['field'] }}'; fieldLabel = '{{ $item['label'] }}'" type="button" class="shrink-0 text-xs font-medium text-maroon-700 hover:text-maroon-800 hover:underline transition-colors">Correct</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-ink-soft">Student ID</p>
-                                <div class="mt-1 flex items-center justify-between bg-navy-50 px-3 py-2 rounded border border-navy-100">
-                                    <span class="text-sm text-navy-900">{{ $alumni->student_id ?: '-' }}</span>
-                                    <button @click="openCorrection = true; correctionField = 'student_id'; fieldLabel = 'Student ID'" type="button" class="text-xs font-medium text-maroon-700 hover:underline">Request Correction</button>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-ink-soft">Batch</p>
-                                <div class="mt-1 flex items-center justify-between bg-navy-50 px-3 py-2 rounded border border-navy-100">
-                                    <span class="text-sm text-navy-900">{{ $alumni->batch ?: '-' }}</span>
-                                    <button @click="openCorrection = true; correctionField = 'batch'; fieldLabel = 'Batch'" type="button" class="text-xs font-medium text-maroon-700 hover:underline">Request Correction</button>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-ink-soft">Graduation Year</p>
-                                <div class="mt-1 flex items-center justify-between bg-navy-50 px-3 py-2 rounded border border-navy-100">
-                                    <span class="text-sm text-navy-900">{{ $alumni->graduation_year ?: '-' }}</span>
-                                    <button @click="openCorrection = true; correctionField = 'graduation_year'; fieldLabel = 'Graduation Year'" type="button" class="text-xs font-medium text-maroon-700 hover:underline">Request Correction</button>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
 
                         {{-- Correction Modal --}}
-                        <div x-show="openCorrection" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-900/50 backdrop-blur-sm" style="display: none;">
-                            <div @click.away="openCorrection = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div x-show="openCorrection" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-900/50 backdrop-blur-sm">
+                            <div @click.away="openCorrection = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
                                 <form method="POST" action="{{ route('member.correction-requests.store') }}">
                                     @csrf
                                     <input type="hidden" name="requested_field" x-bind:value="correctionField">
-                                    
+
                                     <div class="px-6 py-4 border-b border-navy-100 flex items-center justify-between">
                                         <h3 class="font-serif text-lg font-semibold text-navy-900">Request Correction</h3>
-                                        <button type="button" @click="openCorrection = false" class="text-navy-400 hover:text-navy-600">
-                                            <span class="sr-only">Close</span>
-                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                        <button type="button" @click="openCorrection = false" class="flex h-8 w-8 items-center justify-center rounded-lg text-navy-400 hover:text-navy-600 hover:bg-navy-50 transition-colors">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
                                     <div class="p-6 space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-navy-900">Field</label>
-                                            <p class="mt-1 text-sm text-ink-soft" x-text="fieldLabel"></p>
+                                            <p class="mt-1 text-sm text-ink-soft font-medium" x-text="fieldLabel"></p>
                                         </div>
                                         <div>
                                             <label for="requested_value" class="block text-sm font-medium text-navy-900">Correct Value</label>
                                             <input type="text" id="requested_value" name="requested_value" required
-                                                   class="mt-1.5 block w-full rounded-lg border border-navy-200 px-3 py-2 text-sm focus-ring">
+                                                   class="mt-1.5 input-field" placeholder="Enter the correct value">
                                         </div>
                                         <div>
                                             <label for="reason" class="block text-sm font-medium text-navy-900">Reason / Proof</label>
                                             <textarea id="reason" name="reason" rows="3" required
-                                                      class="mt-1.5 block w-full rounded-lg border border-navy-200 px-3 py-2 text-sm focus-ring" placeholder="Please provide context for this correction..."></textarea>
+                                                      class="mt-1.5 input-field resize-none" placeholder="Please provide context or proof for this correction..."></textarea>
                                         </div>
                                     </div>
-                                    <div class="px-6 py-4 bg-navy-50 flex justify-end gap-3 rounded-b-2xl">
-                                        <button type="button" @click="openCorrection = false" class="btn btn-secondary text-sm">Cancel</button>
-                                        <button type="submit" class="btn btn-primary text-sm">Submit Request</button>
+                                    <div class="px-6 py-4 bg-navy-50/50 border-t border-navy-100 flex justify-end gap-3">
+                                        <button type="button" @click="openCorrection = false" class="btn btn-secondary">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Submit Request</button>
                                     </div>
                                 </form>
                             </div>

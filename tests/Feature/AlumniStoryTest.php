@@ -202,9 +202,9 @@ class AlumniStoryTest extends TestCase
 
     public function test_public_story_detail_shows_author(): void
     {
-        $story = AlumniStory::factory()->published()->create(['author_name' => 'Dr. Grace Adeyemi']);
+        $story = AlumniStory::factory()->published()->create(['author_name' => 'Professor Milki Amatul Mogni']);
         $response = $this->get(route('stories.show', $story));
-        $response->assertSee('Dr. Grace Adeyemi');
+        $response->assertSee('Professor Milki Amatul Mogni');
     }
 
     public function test_public_story_detail_shows_breadcrumbs(): void
@@ -621,8 +621,8 @@ class AlumniStoryTest extends TestCase
 
     public function test_admin_stories_store_rejects_oversized_dimensions_image(): void
     {
-        // Small file size, but pixel dimensions exceed the 4000px guard.
-        $image = UploadedFile::fake()->image('huge.png', 5000, 5000)->size(100);
+        // Small file size, but pixel dimensions exceed the 5000px guard.
+        $image = UploadedFile::fake()->image('huge.png', 5500, 5500)->size(100);
         $this->post(route('admin.stories.store'), [
             'title' => 'Oversized Dimensions Story',
             'excerpt' => 'Excerpt',

@@ -41,31 +41,6 @@
                     [$bg, $text] = $styles[$payment->status->value] ?? ['bg-navy-100', 'text-navy-600'];
                 @endphp
                 <span class="mt-4 inline-flex rounded-full {{ $bg }} px-3 py-1 text-xs font-bold uppercase tracking-wide {{ $text }}">{{ $payment->status->label() }}</span>
-
-                @if ($obligation['waived'])
-                    <p class="mt-6 rounded-md bg-navy-50 px-3 py-2 text-xs text-navy-700">
-                        This obligation has been waived by the association.
-                    </p>
-                @elseif ($obligation['overpaid'] > 0)
-                    <p class="mt-6 rounded-md bg-gold-500/10 px-3 py-2 text-xs font-medium text-gold-700">
-                        Overpaid by ৳{{ number_format($obligation['overpaid']) }} — no refund created automatically.
-                    </p>
-                @else
-                    <dl class="mt-6 space-y-2 border-t border-navy-100 pt-4 text-left text-sm">
-                        <div class="flex justify-between gap-2">
-                            <dt class="text-ink-soft">Expected</dt>
-                            <dd class="font-semibold text-navy-950">৳{{ number_format($obligation['expected']) }}</dd>
-                        </div>
-                        <div class="flex justify-between gap-2">
-                            <dt class="text-ink-soft">Collected</dt>
-                            <dd class="font-semibold text-navy-950">৳{{ number_format($obligation['collected']) }}</dd>
-                        </div>
-                        <div class="flex justify-between gap-2">
-                            <dt class="text-ink-soft">Outstanding</dt>
-                            <dd class="font-bold {{ $obligation['outstanding'] > 0 ? 'text-maroon-700' : 'text-emerald-700' }}">৳{{ number_format($obligation['outstanding']) }}</dd>
-                        </div>
-                    </dl>
-                @endunless
             </section>
         </div>
 
@@ -94,14 +69,6 @@
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Membership Tier</dt>
                         <dd class="mt-1 text-sm text-navy-950">{{ $payment->membership?->tier?->badge_label ?? 'Not assigned' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Plan</dt>
-                        <dd class="mt-1 text-sm text-navy-950">{{ $payment->feePlan?->name }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Plan Amount</dt>
-                        <dd class="mt-1 text-sm font-semibold text-navy-950">৳{{ number_format((float) $payment->feePlan?->amount) }} <span class="font-normal text-ink-soft">({{ $payment->currency }})</span></dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Payment Date</dt>

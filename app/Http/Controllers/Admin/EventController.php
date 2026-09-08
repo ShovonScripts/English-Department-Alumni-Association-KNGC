@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventCategory;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
@@ -101,7 +101,7 @@ class EventController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($event->cover_image) {
-                Storage::disk('public')->delete($event->cover_image);
+                \App\Services\SharedFileGuard::deleteIfUnreferenced($event->cover_image, $event->id, 'events');
             }
 
             $data['cover_image'] = $request->file('cover_image')->store('events', 'public');
@@ -117,7 +117,7 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         if ($event->cover_image) {
-            Storage::disk('public')->delete($event->cover_image);
+            SharedFileGuard::deleteIfUnreferenced($event->cover_image, $event->id, 'events');
         }
 
         $event->delete();
@@ -153,9 +153,9 @@ class EventController extends Controller
             'cover_image' => [
                 'nullable',
                 'sometimes',
-                File::image()
-                    ->max('2mb')
-                    ->dimensions(Rule::dimensions()->maxWidth(4000)->maxHeight(4000)),
+                                File::image()
+                    ->max('8mb')
+                    ->dimensions(Rule::dimensions()->maxWidth(5000)->maxHeight(5000)),
             ],
         ];
     }

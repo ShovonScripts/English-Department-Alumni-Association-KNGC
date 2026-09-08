@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Alumni;
 use App\Models\AlumniStory;
-use App\Models\CommitteeMember;
+use App\Models\Committee;
+use App\Models\CommitteeRole;
 use App\Models\Event;
-use App\Models\FeePlan;
 use App\Models\GalleryAlbum;
+use App\Models\HomeSliderImage;
 use App\Models\Membership;
 use App\Models\MembershipTier;
 use App\Models\MembershipType;
 use App\Models\News;
+use App\Models\PressRelease;
 use App\Models\Publication;
 use App\Models\SiteSetting;
+use App\Models\Testimonial;
 use App\Services\FinanceService;
 use App\Services\LeaderboardService;
 use Carbon\Carbon;
@@ -36,12 +39,13 @@ class PageController extends Controller
                 ->orderBy('full_name')
                 ->limit(4)
                 ->get(),
-            'committeeMembers' => CommitteeMember::query()
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->orderBy('name')
-                ->limit(6)
-                ->get(),
+            'committeeMembers' => Committee::query()
+                ->where('is_current', true)
+                ->with(['members' => fn ($q) => $q->with('alumni')])
+                ->first()
+                ?->members
+                ->take(6)
+                ?? collect(),
             'upcomingEvents' => Event::query()
                 ->published()
                 ->upcoming()
@@ -74,6 +78,11 @@ class PageController extends Controller
                 ->latest('publication_date')
                 ->limit(4)
                 ->get(),
+            'latestPressReleases' => PressRelease::query()
+                ->published()
+                ->latest('published_at')
+                ->limit(3)
+                ->get(),
             // Feature 14 — compact top-contributor section, only when the
             // site-level public leaderboard switch is enabled. The service
             // applies every public eligibility rule at the query level.
@@ -88,6 +97,11 @@ class PageController extends Controller
                 ->orderByDesc('approved_at')
                 ->limit(6)
                 ->get(),
+            // Home slider images for Facebook Group CTA
+            'sliderImages' => HomeSliderImage::active()->get(),
+            'facebookGroupUrl' => SiteSetting::get('social_facebook_group', ''),
+            // Active testimonials for home page slider
+            'testimonials' => Testimonial::getActive(),
         ]);
     }
 
@@ -119,6 +133,11 @@ class PageController extends Controller
     public function contact()
     {
         return view('pages.contact');
+    }
+
+    public function credits()
+    {
+        return view('pages.credits');
     }
 
     /**
@@ -217,12 +236,10 @@ class PageController extends Controller
     {
         $membershipTypes = MembershipType::active()->ordered()->get();
         $membershipTiers = MembershipTier::active()->ordered()->get();
-        $feePlans = FeePlan::active()->current()->with('type')->get();
 
         return view('pages.membership', [
             'membershipTypes' => $membershipTypes,
             'membershipTiers' => $membershipTiers,
-            'feePlans' => $feePlans,
         ]);
     }
 }

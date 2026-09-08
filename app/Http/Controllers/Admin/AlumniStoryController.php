@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alumni;
 use App\Models\AlumniStory;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AlumniStoryController extends Controller
@@ -99,12 +99,12 @@ class AlumniStoryController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($alumniStory->cover_image) {
-                Storage::disk('public')->delete($alumniStory->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($alumniStory->cover_image, $alumniStory->id, 'alumni_stories');
             }
             $validated['cover_image'] = $request->file('cover_image')->store('alumni-stories', 'public');
         } elseif ($request->boolean('clear_image')) {
             if ($alumniStory->cover_image) {
-                Storage::disk('public')->delete($alumniStory->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($alumniStory->cover_image, $alumniStory->id, 'alumni_stories');
             }
             $validated['cover_image'] = null;
         }
@@ -118,7 +118,7 @@ class AlumniStoryController extends Controller
     public function destroy(AlumniStory $alumniStory)
     {
         if ($alumniStory->cover_image) {
-            Storage::disk('public')->delete($alumniStory->cover_image);
+            SharedFileGuard::deleteIfUnreferenced($alumniStory->cover_image, $alumniStory->id, 'alumni_stories');
         }
 
         $alumniStory->delete();
@@ -139,7 +139,7 @@ class AlumniStoryController extends Controller
             'author_name' => ['nullable', 'string', 'max:255'],
             'is_featured' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048', Rule::dimensions()->maxWidth(4000)->maxHeight(4000)],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:8192', Rule::dimensions()->maxWidth(5000)->maxHeight(5000)],
         ];
     }
 }

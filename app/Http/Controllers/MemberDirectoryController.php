@@ -46,7 +46,6 @@ class MemberDirectoryController extends Controller
                 fn ($q) => $q->whereNull('membership_tier_id'),
                 fn ($q) => $q->where('membership_tier_id', $tierId)
             ))
-            ->orderBy('sort_order')
             ->orderBy('membership_number')
             ->paginate(12)
             ->withQueryString();

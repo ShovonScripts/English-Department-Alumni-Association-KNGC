@@ -100,6 +100,30 @@ class MemberAuthController extends Controller
         return redirect()->route('member.login');
     }
 
+    public function accountStatus(Request $request)
+    {
+        $user = $request->user();
+        $status = null;
+
+        if ($user && $user->isDisabled()) {
+            $status = 'disabled';
+        } elseif ($user && $user->alumni && $user->alumni->membership) {
+            $membership = $user->alumni->membership;
+            if ($membership->status === Membership::STATUS_SUSPENDED) {
+                $status = 'suspended';
+            } elseif ($membership->status === Membership::STATUS_CANCELLED) {
+                $status = 'cancelled';
+            } elseif ($membership->status === Membership::STATUS_EXPIRED) {
+                $status = 'expired';
+            }
+        }
+
+        return view('member.auth.account-status', [
+            'status' => $status,
+            'user' => $user,
+        ]);
+    }
+
     public function showLinkRequestForm()
     {
         return view('member.auth.forgot-password');
@@ -113,9 +137,8 @@ class MemberAuthController extends Controller
             $request->only('email')
         );
 
-        return $status === PasswordBroker::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+        // Always return the same response regardless of whether the email exists
+        return back()->with(['status' => __('If an account with that email address exists, a password reset link has been sent.')]);
     }
 
     public function showResetForm(Request $request, $token = null)

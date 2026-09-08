@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
 use App\Models\PublicationCategory;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -100,19 +101,19 @@ class PublicationController extends Controller
 
         if ($request->hasFile('cover_image')) {
             if ($publication->cover_image) {
-                Storage::disk('public')->delete($publication->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($publication->cover_image, $publication->id, 'publications');
             }
             $validated['cover_image'] = $request->file('cover_image')->store('publications/covers', 'public');
         } elseif ($request->boolean('clear_image')) {
             if ($publication->cover_image) {
-                Storage::disk('public')->delete($publication->cover_image);
+                SharedFileGuard::deleteIfUnreferenced($publication->cover_image, $publication->id, 'publications');
             }
             $validated['cover_image'] = null;
         }
 
         if ($request->hasFile('document')) {
             if ($publication->document_path) {
-                Storage::disk('public')->delete($publication->document_path);
+                SharedFileGuard::deleteIfUnreferenced($publication->document_path, $publication->id, 'publications');
             }
 
             $file = $request->file('document');
@@ -124,7 +125,7 @@ class PublicationController extends Controller
             $validated['document_mime_type'] = $file->getMimeType();
         } elseif ($request->boolean('clear_document')) {
             if ($publication->document_path) {
-                Storage::disk('public')->delete($publication->document_path);
+                SharedFileGuard::deleteIfUnreferenced($publication->document_path, $publication->id, 'publications');
             }
             $validated['document_path'] = null;
             $validated['document_original_name'] = null;
@@ -141,17 +142,37 @@ class PublicationController extends Controller
     public function destroy(Publication $publication)
     {
         if ($publication->cover_image) {
-            Storage::disk('public')->delete($publication->cover_image);
+            SharedFileGuard::deleteIfUnreferenced($publication->cover_image, $publication->id, 'publications');
         }
 
         if ($publication->document_path) {
-            Storage::disk('public')->delete($publication->document_path);
+            SharedFileGuard::deleteIfUnreferenced($publication->document_path, $publication->id, 'publications');
         }
 
         $publication->delete();
 
         return redirect()->route('admin.publications.index')
             ->with('status', 'Publication deleted.');
+    }
+
+    public function documentView(Publication $publication)
+    {
+        abort_unless($publication->document_path, 404);
+
+        return response()->file(
+            Storage::disk('public')->path($publication->document_path),
+            ['Content-Type' => $publication->document_mime_type ?? 'application/pdf']
+        );
+    }
+
+    public function documentDownload(Publication $publication)
+    {
+        abort_unless($publication->document_path, 404);
+
+        return Storage::disk('public')->download(
+            $publication->document_path,
+            $publication->document_original_name ?? basename($publication->document_path)
+        );
     }
 
     protected function rules(?Publication $publication = null): array
@@ -167,7 +188,7 @@ class PublicationController extends Controller
             'status' => ['required', Rule::in([Publication::STATUS_DRAFT, Publication::STATUS_PUBLISHED])],
             'is_featured' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:8192', Rule::dimensions()->maxWidth(5000)->maxHeight(5000)],
             'document' => ['nullable', 'file', 'mimes:pdf', 'mimetypes:application/pdf', 'max:10240'],
         ];
     }

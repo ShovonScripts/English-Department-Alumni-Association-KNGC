@@ -46,7 +46,7 @@ class MemberDashboardController extends Controller
             'recentPayments' => $recentPayments,
             'outstandingBalance' => $outstandingBalance,
             'totalPaid' => $totalPaid,
-            'rank' => $rank,
+            'rank' => $rank !== null ? ['rank' => $rank, 'total' => $totalPaid] : null,
         ]);
     }
 }

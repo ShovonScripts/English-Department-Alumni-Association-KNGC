@@ -377,7 +377,7 @@ class NewsTest extends TestCase
 
     public function test_admin_news_store_validates_image_size(): void
     {
-        $file = UploadedFile::fake()->image('large.jpg', 4000, 3000)->size(3000);
+        $file = UploadedFile::fake()->image('large.jpg', 4000, 3000)->size(9000);
         $this->post(route('admin.news.store'), [
             'title' => 'Large Image Test',
             'excerpt' => 'Excerpt',
@@ -389,8 +389,8 @@ class NewsTest extends TestCase
 
     public function test_admin_news_store_rejects_oversized_dimensions_image(): void
     {
-        // Small file size, but pixel dimensions exceed the 4000px guard.
-        $file = UploadedFile::fake()->image('huge.png', 5000, 5000)->size(100);
+        // Small file size, but pixel dimensions exceed the 5000px guard.
+        $file = UploadedFile::fake()->image('huge.png', 5500, 5500)->size(100);
         $this->post(route('admin.news.store'), [
             'title' => 'Oversized Dimensions Test',
             'excerpt' => 'Excerpt',

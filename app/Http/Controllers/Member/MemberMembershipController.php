@@ -37,4 +37,17 @@ class MemberMembershipController extends Controller
             'totalPaid' => $totalPaid,
         ]);
     }
+
+    public function card(Request $request)
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $alumni = $user->alumni;
+        $membership = $alumni->membership;
+
+        return view('member.membership.card', [
+            'alumni' => $alumni,
+            'membership' => $membership,
+        ]);
+    }
 }

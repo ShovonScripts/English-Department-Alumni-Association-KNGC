@@ -769,8 +769,8 @@ class GalleryTest extends TestCase
     {
         Storage::fake('public');
 
-        // Album cover: small file size but dimensions exceed the 4000px guard.
-        $huge = UploadedFile::fake()->image('huge.png', 5000, 5000)->size(100);
+        // Small file size, but pixel dimensions exceed the 5000px guard.
+        $huge = UploadedFile::fake()->image('huge.png', 5500, 5500)->size(100);
         $this->post(route('admin.gallery.store'), [
             'title' => 'Oversized Cover Album',
             'description' => 'Should be rejected.',
@@ -781,7 +781,7 @@ class GalleryTest extends TestCase
 
         // Photo upload: same guard applies per image.
         $album = GalleryAlbum::factory()->published()->create();
-        $hugePhoto = UploadedFile::fake()->image('huge-photo.png', 5000, 5000)->size(100);
+        $hugePhoto = UploadedFile::fake()->image('huge-photo.png', 5500, 5500)->size(100);
         $this->post(route('admin.gallery.photos.store', $album), [
             'images' => [$hugePhoto],
         ])->assertSessionHasErrors(['images.0']);

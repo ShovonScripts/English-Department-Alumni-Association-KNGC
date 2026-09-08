@@ -19,7 +19,7 @@
     @endif
 
     <form method="GET" action="{{ route('admin.alumni.index') }}" class="rounded-lg border border-navy-100 bg-white p-6 shadow-sm">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="lg:col-span-2">
                 <label for="search" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Search</label>
                 <input
@@ -43,52 +43,19 @@
             </div>
 
             <div>
-                <label for="graduation_year" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Grad Year</label>
-                <select id="graduation_year" name="graduation_year" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
+                <label for="status" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Status</label>
+                <select id="status" name="status" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
                     <option value="">All</option>
-                    @foreach ($years as $year)
-                        <option value="{{ $year }}" @selected($filters['graduation_year'] == $year)>{{ $year }}</option>
-                    @endforeach
+                    <option value="active" @selected($filters['status'] === 'active')>Active</option>
+                    <option value="inactive" @selected($filters['status'] === 'inactive')>Inactive</option>
                 </select>
             </div>
 
-            <div>
-                <label for="country" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Country</label>
-                <select id="country" name="country" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
-                    <option value="">All</option>
-                    @foreach ($countries as $option)
-                        <option value="{{ $option }}" @selected($filters['country'] == $option)>{{ $option }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="sm:col-span-2 lg:col-span-6">
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div>
-                        <label for="status" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Status</label>
-                        <select id="status" name="status" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
-                            <option value="">All</option>
-                            <option value="active" @selected($filters['status'] === 'active')>Active</option>
-                            <option value="inactive" @selected($filters['status'] === 'inactive')>Inactive</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="featured" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Featured</label>
-                        <select id="featured" name="featured" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
-                            <option value="">All</option>
-                            <option value="1" @selected($filters['featured'] === '1')>Featured</option>
-                            <option value="0" @selected($filters['featured'] === '0')>Not featured</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-end gap-3 lg:col-span-2">
-                        <x-button type="submit" variant="navy">Apply Filters</x-button>
-                        <a href="{{ route('admin.alumni.index') }}" class="focus-ring inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold text-navy-800 transition-colors hover:bg-navy-50">
-                            Reset
-                        </a>
-                    </div>
-                </div>
+            <div class="flex items-end gap-3 lg:col-span-4">
+                <x-button type="submit" variant="navy">Apply Filters</x-button>
+                <a href="{{ route('admin.alumni.index') }}" class="focus-ring inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold text-navy-800 transition-colors hover:bg-navy-50">
+                    Reset
+                </a>
             </div>
         </div>
     </form>
@@ -101,7 +68,6 @@
                         <tr class="border-b border-navy-100 bg-navy-50/60 text-xs uppercase tracking-wider text-ink-soft">
                             <th class="px-6 py-3.5 font-semibold">Alumni</th>
                             <th class="px-6 py-3.5 font-semibold">Batch</th>
-                            <th class="px-6 py-3.5 font-semibold">Grad Year</th>
                             <th class="px-6 py-3.5 font-semibold">Profession</th>
                             <th class="px-6 py-3.5 font-semibold">Organization</th>
                             <th class="px-6 py-3.5 font-semibold">Location</th>
@@ -133,7 +99,6 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-navy-950">{{ $alumnus->batch ?? '—' }}</td>
-                                <td class="px-6 py-4 text-navy-950">{{ $alumnus->graduation_year ?? '—' }}</td>
                                 <td class="px-6 py-4 text-navy-950">{{ $alumnus->profession ?? '—' }}</td>
                                 <td class="px-6 py-4 text-navy-950">{{ $alumnus->organization ?? '—' }}</td>
                                 <td class="px-6 py-4 text-ink-soft">{{ $alumnus->location ?? '—' }}</td>

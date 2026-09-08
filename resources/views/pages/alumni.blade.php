@@ -57,7 +57,7 @@
                 description="Find classmates and colleagues by name, profession, organization, batch, or graduation year."
             />
 
-            <form method="GET" action="{{ route('alumni.index') }}" class="mt-10 rounded-lg border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+            <form method="GET" action="{{ route('alumni.index') }}" class="mt-10 rounded-2xl border border-navy-100 bg-white/95 p-6 shadow-sm backdrop-blur-md sm:p-8">
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     <div class="lg:col-span-2">
                         <label for="search" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Search</label>
@@ -67,23 +67,23 @@
                             name="search"
                             value="{{ $filters['search'] }}"
                             placeholder="Name, profession or organization"
-                            class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 placeholder-navy-400 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none"
+                            class="w-full rounded-xl border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 placeholder-navy-400 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none"
                         >
                     </div>
 
                     <div>
                         <label for="batch" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Batch</label>
-                        <select id="batch" name="batch" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
+                        <select id="batch" name="batch" class="w-full rounded-xl border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
                             <option value="">All batches</option>
                             @foreach ($batches as $batch)
-                                <option value="{{ $batch }}" @selected($filters['batch'] == $batch)>{{ $batch }}</option>
+                                <option value="{{ $batch }}" @selected($filters['batch'] == $batch)>Batch {{ $batch }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
                         <label for="graduation_year" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Graduation Year</label>
-                        <select id="graduation_year" name="graduation_year" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
+                        <select id="graduation_year" name="graduation_year" class="w-full rounded-xl border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
                             <option value="">All years</option>
                             @foreach ($years as $year)
                                 <option value="{{ $year }}" @selected($filters['graduation_year'] == $year)>{{ $year }}</option>
@@ -93,7 +93,7 @@
 
                     <div>
                         <label for="country" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Country</label>
-                        <select id="country" name="country" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
+                        <select id="country" name="country" class="w-full rounded-xl border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
                             <option value="">All countries</option>
                             @foreach ($countries as $option)
                                 <option value="{{ $option }}" @selected($filters['country'] == $option)>{{ $option }}</option>
@@ -102,14 +102,51 @@
                     </div>
                 </div>
 
-                <div class="mt-6 flex flex-wrap items-center gap-3">
-                    <x-button type="submit" variant="navy">Search Alumni</x-button>
-                    @if ($alumni->total() > 0 || $filters['search'] !== '' || $filters['batch'] || $filters['graduation_year'] || $filters['country'])
-                        <a href="{{ route('alumni.index') }}" class="focus-ring inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold text-navy-800 transition-colors hover:bg-navy-50">
-                            Clear filters
-                        </a>
-                    @endif
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-navy-50 pt-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <x-button type="submit" variant="navy" class="rounded-xl px-5">Search Alumni</x-button>
+                        @if ($filters['search'] !== '' || $filters['batch'] || $filters['graduation_year'] || $filters['country'])
+                            <a href="{{ route('alumni.index') }}" class="focus-ring inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-maroon-700 transition-colors hover:bg-maroon-50">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Clear all filters
+                            </a>
+                        @endif
+                    </div>
+
+                    {{-- Active Results Counter --}}
+                    <div class="text-xs font-medium text-ink-soft">
+                        Showing <span class="font-bold text-navy-950">{{ $alumni->total() }}</span> alumni
+                    </div>
                 </div>
+
+                {{-- Active Filter Chips --}}
+                @if ($filters['search'] || $filters['batch'] || $filters['graduation_year'] || $filters['country'])
+                    <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-navy-50 pt-3 text-xs">
+                        <span class="font-semibold text-navy-600">Active Filters:</span>
+                        @if ($filters['search'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-navy-100 px-3 py-1 font-medium text-navy-900">
+                                Keyword: "{{ $filters['search'] }}"
+                            </span>
+                        @endif
+                        @if ($filters['batch'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-gold-100 px-3 py-1 font-semibold text-gold-900">
+                                Batch {{ $filters['batch'] }}
+                            </span>
+                        @endif
+                        @if ($filters['graduation_year'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-maroon-100 px-3 py-1 font-semibold text-maroon-900">
+                                Year: {{ $filters['graduation_year'] }}
+                            </span>
+                        @endif
+                        @if ($filters['country'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-navy-100 px-3 py-1 font-medium text-navy-900">
+                                {{ $filters['country'] }}
+                            </span>
+                        @endif
+                    </div>
+                @endif
             </form>
 
             @if ($alumni->isNotEmpty())
@@ -150,18 +187,18 @@
     {{-- CTA --}}
     <section class="bg-white py-16 sm:py-20">
         <div class="container-page">
-            <div class="rounded-lg bg-navy-950 p-10 text-white sm:p-12">
+            <div class="rounded-3xl bg-gradient-to-br from-navy-950 via-navy-900 to-maroon-950 p-10 text-white sm:p-14 shadow-2xl">
                 <div class="grid items-center gap-8 lg:grid-cols-2">
                     <div>
                         <x-section-heading
                             eyebrow="Get Listed"
                             title="Want to be part of the directory?"
-                            description="Membership is the key to the directory. Register your interest and we will invite you to join the Association as new records are added."
+                            description="Membership is the key to the directory. Register your profile and join the EDAA family as verified alumni."
                             dark
                         />
                     </div>
                     <div class="lg:justify-self-end">
-                        <x-button href="{{ route('contact') }}" variant="gold" :icon="true">Become a Member</x-button>
+                        <x-button href="{{ route('membership.apply') }}" variant="gold" size="lg" :icon="true">Become a Member</x-button>
                     </div>
                 </div>
             </div>

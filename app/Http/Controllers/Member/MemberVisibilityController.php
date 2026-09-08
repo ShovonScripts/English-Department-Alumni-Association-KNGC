@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Redirect;
 
 class MemberVisibilityController extends Controller
 {
+    public function show(Request $request)
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $alumni = $user->alumni;
+        $membership = $alumni->membership;
+
+        return view('member.privacy', [
+            'alumni' => $alumni,
+            'membership' => $membership,
+        ]);
+    }
+
     public function toggle(Request $request)
     {
         /** @var User $user */

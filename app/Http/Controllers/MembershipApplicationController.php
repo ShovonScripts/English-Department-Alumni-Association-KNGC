@@ -75,6 +75,16 @@ class MembershipApplicationController extends Controller
                 $validated['alumni_document_mime_type'] = $file->getMimeType();
             }
 
+            // Handle profile photo upload.
+            if ($request->hasFile('profile_photo')) {
+                $file = $request->file('profile_photo');
+                $filename = uniqid('app_photo_').'.'.$file->getClientOriginalExtension();
+                $validated['profile_photo_path'] = $file->storeAs('applications/profile-photos', $filename, 'public');
+                $validated['profile_photo_original_name'] = $file->getClientOriginalName();
+                $validated['profile_photo_size'] = $file->getSize();
+                $validated['profile_photo_mime_type'] = $file->getMimeType();
+            }
+
             $application = MembershipApplication::create([
                 ...$validated,
                 'country' => $validated['country'] ?? 'Bangladesh',
@@ -130,11 +140,10 @@ class MembershipApplicationController extends Controller
             'current_organization' => ['nullable', 'string', 'max:150'],
             'profession' => ['nullable', 'string', 'max:100'],
             'current_designation' => ['nullable', 'string', 'max:100'],
-            'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
-            'date_of_birth' => ['nullable', 'date', 'before:today'],
             'application_message' => ['nullable', 'string', 'max:5000'],
             'alumni_document' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

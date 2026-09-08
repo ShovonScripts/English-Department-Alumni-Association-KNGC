@@ -59,7 +59,6 @@ class MemberRegisterController extends Controller
             'name' => $alumni->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'email_verified_at' => now(),
             'alumni_id' => $alumni->id,
         ]);
 

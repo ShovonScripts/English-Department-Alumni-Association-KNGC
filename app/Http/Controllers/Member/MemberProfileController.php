@@ -26,6 +26,7 @@ class MemberProfileController extends Controller
         $alumni = $user->alumni;
 
         return view('member.profile.edit', [
+            'user' => $user,
             'alumni' => $alumni,
             'membership' => $alumni->membership,
         ]);
@@ -38,6 +39,7 @@ class MemberProfileController extends Controller
         $alumni = $user->alumni;
 
         $request->validate([
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'city' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
@@ -45,6 +47,8 @@ class MemberProfileController extends Controller
             'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'remove_photo' => ['boolean'],
         ]);
+
+        $user->update(['email' => $request->email]);
 
         $data = [
             'phone' => $request->phone,

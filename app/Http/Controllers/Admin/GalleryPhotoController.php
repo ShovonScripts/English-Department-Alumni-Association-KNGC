@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\GalleryAlbum;
 use App\Models\GalleryPhoto;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class GalleryPhotoController extends Controller
@@ -15,7 +15,7 @@ class GalleryPhotoController extends Controller
     {
         $request->validate([
             'images' => ['required', 'array', 'min:1'],
-            'images.*' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:2048', Rule::dimensions()->maxWidth(4000)->maxHeight(4000)],
+            'images.*' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:8192', Rule::dimensions()->maxWidth(5000)->maxHeight(5000)],
             'titles' => ['nullable', 'array'],
             'titles.*' => ['nullable', 'string', 'max:255'],
             'captions' => ['nullable', 'array'],
@@ -71,7 +71,7 @@ class GalleryPhotoController extends Controller
         abort_unless($galleryPhoto->gallery_album_id === $galleryAlbum->id, 404);
 
         if ($galleryPhoto->image) {
-            Storage::disk('public')->delete($galleryPhoto->image);
+            SharedFileGuard::deleteIfUnreferenced($galleryPhoto->image, $galleryPhoto->id, 'gallery_photos');
         }
 
         $galleryPhoto->delete();

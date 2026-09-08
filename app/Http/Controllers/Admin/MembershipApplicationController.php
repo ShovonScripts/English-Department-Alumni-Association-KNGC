@@ -226,6 +226,7 @@ class MembershipApplicationController extends Controller
             'designation' => $application->current_designation,
             'city' => $application->city,
             'country' => $application->country,
+            'profile_photo' => $application->profile_photo_path,
             'status' => Alumni::STATUS_ACTIVE,
         ]);
     }

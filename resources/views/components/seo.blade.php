@@ -7,8 +7,10 @@
 
 @php
     $site = config('site');
-    $pageTitle = $title ? "{$title} | {$site['name']}" : $site['name'];
-    $metaDescription = $description ?? $site['meta']['default_description'];
+    $siteName = \App\Models\SiteSetting::get('site_name') ?: $site['name'];
+    $siteDescription = \App\Models\SiteSetting::get('site_description') ?: $site['description'];
+    $pageTitle = $title ? "{$title} | {$siteName}" : $siteName;
+    $metaDescription = $description ?? $siteDescription;
     $canonical = url()->current();
     $ogImage = url($image ?? $site['meta']['og_image']);
 @endphp
@@ -19,7 +21,7 @@
 <link rel="canonical" href="{{ $canonical }}">
 
 <meta property="og:type" content="{{ $type }}">
-<meta property="og:site_name" content="{{ $site['name'] }}">
+<meta property="og:site_name" content="{{ $siteName }}">
 <meta property="og:title" content="{{ $pageTitle }}">
 <meta property="og:description" content="{{ $metaDescription }}">
 <meta property="og:url" content="{{ $canonical }}">

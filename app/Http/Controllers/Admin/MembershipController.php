@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Alumni;
-use App\Models\FeePlan;
 use App\Models\Membership;
 use App\Models\MembershipTier;
 use App\Models\MembershipType;
@@ -137,19 +135,8 @@ class MembershipController extends Controller
     {
         $membership->load(['alumni', 'type', 'tier']);
 
-        // Informational only — nothing here marks a member as paid/unpaid.
-        $currentFee = $membership->membership_type_id !== null
-            ? FeePlan::currentForType($membership->membership_type_id)
-            : null;
-
-        // Fee & payment summary for this membership's applicable fee.
-        $summary = null;
-        if ($currentFee !== null) {
-            $summary = Payment::obligationFor($membership->id, $currentFee);
-        }
-
         $recentPayments = $membership->payments()
-            ->with(['feePlan', 'recordedBy'])
+            ->with(['recordedBy'])
             ->orderByDesc('paid_at')
             ->orderByDesc('id')
             ->limit(5)
@@ -157,8 +144,6 @@ class MembershipController extends Controller
 
         return view('admin.members.show', [
             'membership' => $membership,
-            'currentFee' => $currentFee,
-            'summary' => $summary,
             'recentPayments' => $recentPayments,
             'paymentCount' => $membership->payments()->valid()->count(),
         ]);
@@ -258,6 +243,21 @@ class MembershipController extends Controller
         return redirect()
             ->route('admin.members.show', $membership)
             ->with('status', "Membership {$membership->membership_number} is now {$state}.");
+    }
+
+    /**
+     * Recalculate and assign the membership tier based on verified
+     * contribution total.
+     */
+    public function recalculateTier(Membership $membership)
+    {
+        $tier = $membership->recalculateTier();
+
+        $label = $tier ? "{$tier->badge_label} — {$tier->name}" : 'No tier (contribution too low)';
+
+        return redirect()
+            ->route('admin.members.show', $membership)
+            ->with('status', "Tier recalculated: {$label}.");
     }
 
     /**

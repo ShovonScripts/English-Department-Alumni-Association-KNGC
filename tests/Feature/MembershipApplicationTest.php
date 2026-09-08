@@ -11,6 +11,8 @@ use App\Models\MembershipTier;
 use App\Models\MembershipType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MembershipApplicationTest extends TestCase
@@ -115,18 +117,18 @@ class MembershipApplicationTest extends TestCase
         $response->assertDontSee('Hidden Tier');
     }
 
-    public function test_membership_page_shows_current_fee_plans(): void
+    public function test_membership_page_does_not_show_fee_plans(): void
     {
         $type = $this->createMembershipType();
-        $plan = FeePlan::factory()->current()->create([
+        FeePlan::factory()->current()->create([
             'membership_type_id' => $type->id,
             'name' => 'Annual Fee',
             'amount' => 5000,
         ]);
 
         $response = $this->get(route('membership'));
-        $response->assertSee('Annual Fee');
-        $response->assertSee('৳5,000');
+        $response->assertDontSee('Annual Fee');
+        $response->assertDontSee('৳5,000');
     }
 
     public function test_membership_page_excludes_expired_fee_plans(): void
@@ -934,5 +936,123 @@ class MembershipApplicationTest extends TestCase
             $token,
         ]));
         $response->assertDontSee('+8801999999999');
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // PROFILE PHOTO UPLOAD
+    // ──────────────────────────────────────────────────────────────
+
+    public function test_apply_page_has_profile_photo_upload(): void
+    {
+        $this->get(route('membership.apply'))
+            ->assertOk()
+            ->assertSee('profile_photo')
+            ->assertSee('Profile Photo');
+    }
+
+    public function test_profile_photo_is_optional(): void
+    {
+        $this->post(route('membership.apply.store'), $this->validApplicationData())
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('membership_applications', [
+            'email' => 'john@example.com',
+            'profile_photo_path' => null,
+        ]);
+    }
+
+    public function test_profile_photo_is_stored_on_submission(): void
+    {
+        Storage::fake('public');
+
+        $photo = UploadedFile::fake()->image('photo.jpg', 200, 200)->size(100);
+
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'profile_photo' => $photo,
+        ]))->assertRedirect();
+
+        $app = MembershipApplication::first();
+        $this->assertNotNull($app->profile_photo_path);
+        $this->assertStringStartsWith('applications/profile-photos/', $app->profile_photo_path);
+        $this->assertSame('photo.jpg', $app->profile_photo_original_name);
+        $this->assertNotNull($app->profile_photo_size);
+        $this->assertNotNull($app->profile_photo_mime_type);
+
+        Storage::disk('public')->assertExists($app->profile_photo_path);
+    }
+
+    public function test_profile_photo_accepts_png(): void
+    {
+        Storage::fake('public');
+
+        $photo = UploadedFile::fake()->image('photo.png', 200, 200)->size(100)->mimeType('image/png');
+
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'profile_photo' => $photo,
+        ]))->assertRedirect();
+
+        $app = MembershipApplication::first();
+        $this->assertNotNull($app->profile_photo_path);
+    }
+
+    public function test_profile_photo_rejects_invalid_type(): void
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'profile_photo' => $file,
+        ]))->assertSessionHasErrors('profile_photo');
+    }
+
+    public function test_profile_photo_rejects_oversized_file(): void
+    {
+        Storage::fake('public');
+
+        $photo = UploadedFile::fake()->image('photo.jpg', 200, 200)->size(3000);
+
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'profile_photo' => $photo,
+        ]))->assertSessionHasErrors('profile_photo');
+    }
+
+    public function test_profile_photo_copied_to_alumni_on_approval(): void
+    {
+        Storage::fake('public');
+
+        $type = $this->createMembershipType();
+        $photo = UploadedFile::fake()->image('photo.jpg', 200, 200)->size(100);
+
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'email' => 'photo-test@example.com',
+            'profile_photo' => $photo,
+        ]))->assertRedirect();
+
+        $app = MembershipApplication::first();
+        $storedPath = $app->profile_photo_path;
+        $this->assertNotNull($storedPath);
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.membership-applications.approve', $app), [
+                'membership_type_id' => $type->id,
+            ]);
+
+        $alumni = Alumni::whereRaw('LOWER(email) = ?', ['photo-test@example.com'])->first();
+        $this->assertNotNull($alumni);
+        $this->assertSame($storedPath, $alumni->profile_photo);
+    }
+
+    public function test_profile_photo_without_file_still_works(): void
+    {
+        $this->post(route('membership.apply.store'), $this->validApplicationData([
+            'profile_photo' => null,
+        ]))->assertRedirect();
+
+        $app = MembershipApplication::first();
+        $this->assertNull($app->profile_photo_path);
+        $this->assertNull($app->profile_photo_original_name);
+        $this->assertNull($app->profile_photo_size);
+        $this->assertNull($app->profile_photo_mime_type);
     }
 }

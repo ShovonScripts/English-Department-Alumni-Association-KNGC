@@ -25,8 +25,12 @@ class MemberMiddleware
 
         $membership = $user->alumni->membership;
 
-        if (! $membership || $membership->status !== Membership::STATUS_ACTIVE) {
-            return redirect()->route('member.login')->with('error', 'You do not have an active membership. Please contact administration.');
+        if (! $membership) {
+            return redirect()->route('member.account-status');
+        }
+
+        if ($membership->status !== Membership::STATUS_ACTIVE) {
+            return redirect()->route('member.account-status');
         }
 
         return $next($request);

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use App\Models\NewsCategory;
+use App\Services\SharedFileGuard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class NewsController extends Controller
@@ -97,12 +97,12 @@ class NewsController extends Controller
 
         if ($request->hasFile('featured_image')) {
             if ($news->featured_image) {
-                Storage::disk('public')->delete($news->featured_image);
+                SharedFileGuard::deleteIfUnreferenced($news->featured_image, $news->id, 'news');
             }
             $validated['featured_image'] = $request->file('featured_image')->store('news', 'public');
         } elseif ($request->boolean('clear_image')) {
             if ($news->featured_image) {
-                Storage::disk('public')->delete($news->featured_image);
+                SharedFileGuard::deleteIfUnreferenced($news->featured_image, $news->id, 'news');
             }
             $validated['featured_image'] = null;
         }
@@ -116,7 +116,7 @@ class NewsController extends Controller
     public function destroy(News $news)
     {
         if ($news->featured_image) {
-            Storage::disk('public')->delete($news->featured_image);
+            SharedFileGuard::deleteIfUnreferenced($news->featured_image, $news->id, 'news');
         }
 
         $news->delete();
@@ -137,7 +137,7 @@ class NewsController extends Controller
             'author_name' => ['nullable', 'string', 'max:255'],
             'is_featured' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'featured_image' => ['nullable', 'sometimes', 'image', 'mimes:jpeg,png,webp', 'max:2048', Rule::dimensions()->maxWidth(4000)->maxHeight(4000)],
+            'featured_image' => ['nullable', 'sometimes', 'image', 'mimes:jpeg,png,webp', 'max:8192', Rule::dimensions()->maxWidth(5000)->maxHeight(5000)],
         ];
     }
 }

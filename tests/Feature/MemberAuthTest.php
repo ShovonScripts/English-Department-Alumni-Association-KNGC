@@ -44,6 +44,7 @@ class MemberAuthTest extends TestCase
             'email' => 'member@test.com',
             'alumni_id' => $alumni->id,
             'password' => Hash::make('Password1'),
+            'email_verified_at' => now(),
         ], $userOverrides ?? []));
 
         return compact('alumni', 'membership', 'user', 'type', 'tier');
@@ -256,7 +257,7 @@ class MemberAuthTest extends TestCase
             'email' => 'dash@test.com',
             'password' => 'Password1',
             'password_confirmation' => 'Password1',
-        ])->assertRedirect(route('member.dashboard'));
+        ])->assertRedirect(route('member.verification.notice'));
     }
 
     /*
@@ -539,7 +540,7 @@ class MemberAuthTest extends TestCase
         $this->actingAs($user);
 
         $this->get(route('member.dashboard'))
-            ->assertRedirect(route('member.login'));
+            ->assertRedirect(route('member.account-status'));
     }
 
     public function test_active_member_can_access_dashboard(): void
@@ -795,7 +796,7 @@ class MemberAuthTest extends TestCase
 
         $this->get(route('member.dashboard'))
             ->assertOk()
-            ->assertSee('Test Member')
+            ->assertSee('Welcome back')
             ->assertSee('Active');
     }
 
@@ -817,7 +818,7 @@ class MemberAuthTest extends TestCase
 
         $this->get(route('member.dashboard'))
             ->assertOk()
-            ->assertSee('No payments recorded yet');
+            ->assertSee('No recent activity yet');
     }
 
     /*

@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\AlumniController as AdminAlumniController;
 use App\Http\Controllers\Admin\AlumniStoryController as AdminAlumniStoryController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\CommitteeMemberController as AdminCommitteeMemberController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Admin\BatchController as AdminBatchController;
+use App\Http\Controllers\Admin\CommitteeController as AdminCommitteeController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\CorrectionRequestController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -11,10 +13,10 @@ use App\Http\Controllers\Admin\EventCategoryController as AdminEventCategoryCont
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\ExpenseCategoryController as AdminExpenseCategoryController;
 use App\Http\Controllers\Admin\ExpenseController as AdminExpenseController;
-use App\Http\Controllers\Admin\FeePlanController as AdminFeePlanController;
 use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
 use App\Http\Controllers\Admin\GalleryAlbumController as AdminGalleryAlbumController;
 use App\Http\Controllers\Admin\GalleryPhotoController as AdminGalleryPhotoController;
+use App\Http\Controllers\Admin\HomeSliderController as AdminHomeSliderController;
 use App\Http\Controllers\Admin\LeaderboardController as AdminLeaderboardController;
 use App\Http\Controllers\Admin\MembershipApplicationController as AdminMembershipApplicationController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
@@ -23,12 +25,16 @@ use App\Http\Controllers\Admin\MembershipTypeController as AdminMembershipTypeCo
 use App\Http\Controllers\Admin\NewsCategoryController as AdminNewsCategoryController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\PressReleaseController as AdminPressReleaseController;
 use App\Http\Controllers\Admin\PublicationCategoryController as AdminPublicationCategoryController;
 use App\Http\Controllers\Admin\PublicationController as AdminPublicationController;
 use App\Http\Controllers\Admin\SiteSettingsController as AdminSiteSettingsController;
+use App\Http\Controllers\Admin\AdminController as AdminAdminController;
+use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AlumniStoryPublicController;
-use App\Http\Controllers\CommitteeController;
+use App\Http\Controllers\CommitteePublicController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GalleryPublicController;
@@ -47,6 +53,7 @@ use App\Http\Controllers\MemberDirectoryController;
 use App\Http\Controllers\MembershipApplicationController;
 use App\Http\Controllers\NewsPublicController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PressReleasePublicController;
 use App\Http\Controllers\PublicationPublicController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,8 +67,6 @@ Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 Route::get('/alumni/{alumni}', [AlumniController::class, 'show'])->name('alumni.show');
-Route::get('/committee', [CommitteeController::class, 'index'])->name('committee.index');
-Route::get('/committee/{committeeMember}', [CommitteeController::class, 'show'])->name('committee.show');
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 Route::get('/news', [NewsPublicController::class, 'index'])->name('news.index');
@@ -72,11 +77,22 @@ Route::get('/gallery', [GalleryPublicController::class, 'index'])->name('gallery
 Route::get('/gallery/{album}', [GalleryPublicController::class, 'show'])->name('gallery.show');
 Route::get('/leaderboard', [PublicLeaderboardController::class, 'index'])->name('leaderboard.index');
 Route::get('/finance', [PageController::class, 'finance'])->name('finance.public');
+Route::get('/committees', [CommitteePublicController::class, 'index'])->name('committees.index');
+Route::get('/committees/history/{type}', [CommitteePublicController::class, 'history'])->name('committees.history');
+Route::get('/committees/{committee}', [CommitteePublicController::class, 'show'])->name('committees.show');
 Route::get('/publications', [PublicationPublicController::class, 'index'])->name('publications.index');
 Route::get('/publications/{publication}', [PublicationPublicController::class, 'show'])->name('publications.show');
 Route::get('/publications/{publication}/download', [PublicationPublicController::class, 'download'])->name('publications.download');
+Route::get('/press-releases', [PressReleasePublicController::class, 'index'])->name('press-releases.index');
+Route::get('/press-releases/{pressRelease}', [PressReleasePublicController::class, 'show'])->name('press-releases.show');
+Route::get('/press-releases/{pressRelease}/download', [PressReleasePublicController::class, 'download'])->name('press-releases.download');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/credits', [PageController::class, 'credits'])->name('credits');
+
+// Comments
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
 // Public membership application (Feature 17).
 Route::get('/membership', [PageController::class, 'membership'])->name('membership');
@@ -112,8 +128,37 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('settings', [AdminSiteSettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [AdminSiteSettingsController::class, 'update'])->name('settings.update');
 
+    // Admin management
+    Route::get('admins', [AdminAdminController::class, 'index'])->name('admins.index');
+    Route::get('admins/create', [AdminAdminController::class, 'create'])->name('admins.create');
+    Route::post('admins', [AdminAdminController::class, 'store'])->name('admins.store');
+    Route::get('admins/{admin}', [AdminAdminController::class, 'show'])->name('admins.show');
+    Route::get('admins/{admin}/edit', [AdminAdminController::class, 'edit'])->name('admins.edit');
+    Route::put('admins/{admin}', [AdminAdminController::class, 'update'])->name('admins.update');
+    Route::delete('admins/{admin}', [AdminAdminController::class, 'destroy'])->name('admins.destroy');
+    Route::post('admins/{admin}/toggle-status', [AdminAdminController::class, 'toggleStatus'])->name('admins.toggle-status');
+
+    // Activity log
+    Route::get('activity-log', [AdminActivityLogController::class, 'index'])->name('activity-log.index');
+
+    // Home slider images for Facebook Group CTA
+    Route::get('home-slider', [AdminHomeSliderController::class, 'index'])->name('home-slider.index');
+    Route::post('home-slider', [AdminHomeSliderController::class, 'store'])->name('home-slider.store');
+    Route::put('home-slider/{slide}', [AdminHomeSliderController::class, 'update'])->name('home-slider.update');
+    Route::delete('home-slider/{slide}', [AdminHomeSliderController::class, 'destroy'])->name('home-slider.destroy');
+    Route::put('home-slider-reorder', [AdminHomeSliderController::class, 'reorder'])->name('home-slider.reorder');
+
+    // Testimonials for home page
+    Route::resource('testimonials', AdminTestimonialController::class)
+        ->parameters(['testimonials' => 'testimonial'])
+        ->except(['show']);
+
     Route::resource('alumni', AdminAlumniController::class)
         ->parameters(['alumni' => 'alumni']);
+
+    Route::resource('batches', AdminBatchController::class)
+        ->parameters(['batches' => 'batch'])
+        ->except(['show']);
 
     // Membership foundation (Feature 11). The `membership-types` and
     // `membership-tiers` literals are distinct route segments, so they do
@@ -135,6 +180,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->name('members.disable');
     Route::post('members/{membership}/enable', [AdminMembershipController::class, 'enable'])
         ->name('members.enable');
+    Route::post('members/{membership}/recalculate-tier', [AdminMembershipController::class, 'recalculateTier'])
+        ->name('members.recalculate-tier');
 
     // Member leaderboard (Feature 14).
     Route::get('leaderboard', [AdminLeaderboardController::class, 'index'])
@@ -151,16 +198,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('membership-tiers', AdminMembershipTierController::class)
         ->parameters(['membership-tiers' => 'membershipTier'])
         ->except(['show']);
-
-    // Fee plan management (Feature 12). The literal `fee-plans` segment is
-    // distinct from `members/{membership}`, so no ordering conflicts exist.
-    Route::resource('fee-plans', AdminFeePlanController::class)
-        ->parameters(['fee-plans' => 'feePlan']);
-
-    Route::post('fee-plans/{feePlan}/activate', [AdminFeePlanController::class, 'activate'])
-        ->name('fee-plans.activate');
-    Route::post('fee-plans/{feePlan}/deactivate', [AdminFeePlanController::class, 'deactivate'])
-        ->name('fee-plans.deactivate');
 
     // Manual fee collection records (Feature 13). No destructive delete
     // route exists — payments are voided for audit safety.
@@ -193,8 +230,44 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('expenses/{expense}/void', [AdminExpenseController::class, 'void'])
         ->name('expenses.void');
 
-    Route::resource('committee', AdminCommitteeMemberController::class)
-        ->parameters(['committee' => 'committeeMember']);
+    // Committee management (Feature 23).
+    Route::get('committee-types', [AdminCommitteeController::class, 'typeIndex'])
+        ->name('committee-types.index');
+    Route::get('committee-types/create', [AdminCommitteeController::class, 'typeCreate'])
+        ->name('committee-types.create');
+    Route::post('committee-types', [AdminCommitteeController::class, 'typeStore'])
+        ->name('committee-types.store');
+    Route::get('committee-types/{committeeType}', [AdminCommitteeController::class, 'typeShow'])
+        ->name('committee-types.show');
+    Route::get('committee-types/{committeeType}/edit', [AdminCommitteeController::class, 'typeEdit'])
+        ->name('committee-types.edit');
+    Route::put('committee-types/{committeeType}', [AdminCommitteeController::class, 'typeUpdate'])
+        ->name('committee-types.update');
+    Route::delete('committee-types/{committeeType}', [AdminCommitteeController::class, 'typeDestroy'])
+        ->name('committee-types.destroy');
+
+    Route::get('committee-roles', [AdminCommitteeController::class, 'roleIndex'])
+        ->name('committee-roles.index');
+    Route::post('committee-roles', [AdminCommitteeController::class, 'roleStore'])
+        ->name('committee-roles.store');
+    Route::post('committee-roles/{role}/up', [AdminCommitteeController::class, 'roleUp'])
+        ->name('committee-roles.up');
+    Route::post('committee-roles/{role}/down', [AdminCommitteeController::class, 'roleDown'])
+        ->name('committee-roles.down');
+    Route::delete('committee-roles/{role}', [AdminCommitteeController::class, 'roleDestroy'])
+        ->name('committee-roles.destroy');
+
+    Route::resource('committees', AdminCommitteeController::class)
+        ->parameters(['committees' => 'committee']);
+
+    Route::post('committees/{committee}/make-current', [AdminCommitteeController::class, 'makeCurrent'])
+        ->name('committees.make-current');
+    Route::post('committees/{committee}/add-member', [AdminCommitteeController::class, 'addMember'])
+        ->name('committees.add-member');
+    Route::delete('committees/{committee}/members/{membership}', [AdminCommitteeController::class, 'removeMember'])
+        ->name('committees.remove-member');
+    Route::put('committees/{committee}/members/{membership}/role', [AdminCommitteeController::class, 'updateMemberRole'])
+        ->name('committees.update-member-role');
 
     // Event category routes must be registered before the `events` resource
     // so the literal `events/categories` path is not swallowed by
@@ -237,9 +310,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('publications', AdminPublicationController::class)
         ->parameters(['publications' => 'publication']);
 
+    Route::get('publications/{publication}/document', [AdminPublicationController::class, 'documentView'])
+        ->name('publications.document.view');
+    Route::get('publications/{publication}/document/download', [AdminPublicationController::class, 'documentDownload'])
+        ->name('publications.document.download');
+
     Route::resource('publication-categories', AdminPublicationCategoryController::class)
         ->parameters(['publication-categories' => 'publicationCategory'])
         ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::resource('press-releases', AdminPressReleaseController::class)
+        ->parameters(['press-releases' => 'pressRelease']);
 
     Route::resource('messages', AdminContactMessageController::class)
         ->parameters(['messages' => 'contactMessage'])
@@ -284,6 +365,7 @@ Route::prefix('member')->name('member.')->middleware('guest')->group(function ()
 });
 
 Route::delete('/member/logout', [MemberAuthController::class, 'logout'])->name('member.logout');
+Route::get('/member/account-status', [MemberAuthController::class, 'accountStatus'])->name('member.account-status');
 
 /*
 |--------------------------------------------------------------------------
@@ -292,9 +374,6 @@ Route::delete('/member/logout', [MemberAuthController::class, 'logout'])->name('
 */
 
 Route::prefix('member')->name('member.')->middleware(['auth', 'member', 'member.active'])->group(function () {
-    Route::get('/email/verify', [MemberSecurityController::class, 'showVerifyEmail'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', [MemberSecurityController::class, 'verifyEmail'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
-    Route::post('/email/verification-notification', [MemberSecurityController::class, 'resendVerificationEmail'])->middleware('throttle:6,1')->name('verification.send');
     Route::get('/', [MemberDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [MemberProfileController::class, 'show'])->name('profile');
@@ -302,12 +381,14 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'member', 'member.
     Route::put('/profile', [MemberProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/membership', [MemberMembershipController::class, 'show'])->name('membership');
+    Route::get('/membership/card', [MemberMembershipController::class, 'card'])->name('membership.card');
 
     Route::get('/payments', [MemberPaymentController::class, 'index'])->name('payments');
 
     Route::get('/applications', [MemberApplicationController::class, 'index'])->name('applications');
 
     Route::patch('/visibility', [MemberVisibilityController::class, 'toggle'])->name('visibility.toggle');
+    Route::get('/privacy', [MemberVisibilityController::class, 'show'])->name('privacy');
 
     Route::get('/security', [MemberSecurityController::class, 'index'])->name('security');
     Route::put('/security/password', [MemberSecurityController::class, 'updatePassword'])->name('security.password.update');

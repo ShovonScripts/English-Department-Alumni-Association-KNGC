@@ -29,7 +29,6 @@ class LeaderboardController extends Controller
             'type' => trim((string) $request->query('type', '')),
             'tier' => trim((string) $request->query('tier', '')),
             'batch' => trim((string) $request->query('batch', '')),
-            'graduation_year' => trim((string) $request->query('graduation_year', '')),
         ];
 
         return view('pages.leaderboard', [
@@ -38,7 +37,6 @@ class LeaderboardController extends Controller
             'types' => MembershipType::query()->active()->ordered()->get(['slug', 'name']),
             'tiers' => MembershipTier::query()->active()->ordered()->get(['slug', 'name']),
             'batches' => $this->leaderboard->eligibleAlumniValues('batch'),
-            'graduationYears' => $this->leaderboard->eligibleAlumniValues('graduation_year'),
         ]);
     }
 }

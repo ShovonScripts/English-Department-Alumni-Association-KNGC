@@ -15,10 +15,7 @@ class AlumniController extends Controller
     {
         $search = trim((string) $request->query('search'));
         $batch = $request->query('batch');
-        $graduationYear = $request->query('graduation_year');
-        $country = $request->query('country');
         $status = $request->query('status');
-        $featured = $request->query('featured');
 
         $alumni = Alumni::query()
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
@@ -28,10 +25,7 @@ class AlumniController extends Controller
                     ->orWhere('profession', 'like', "%{$search}%");
             }))
             ->when($batch, fn ($query, $batch) => $query->where('batch', $batch))
-            ->when($graduationYear, fn ($query, $year) => $query->where('graduation_year', $year))
-            ->when($country, fn ($query, $country) => $query->where('country', $country))
             ->when($status, fn ($query, $status) => $query->where('status', $status))
-            ->when($featured !== null && $featured !== '', fn ($query) => $query->where('is_featured', filter_var($featured, FILTER_VALIDATE_BOOL)))
             ->orderByDesc('created_at')
             ->paginate(15)
             ->withQueryString();
@@ -41,14 +35,9 @@ class AlumniController extends Controller
             'filters' => [
                 'search' => $search,
                 'batch' => $batch,
-                'graduation_year' => $graduationYear,
-                'country' => $country,
                 'status' => $status,
-                'featured' => $featured,
             ],
             'batches' => Alumni::query()->whereNotNull('batch')->distinct()->orderBy('batch')->pluck('batch'),
-            'years' => Alumni::query()->whereNotNull('graduation_year')->distinct()->orderByDesc('graduation_year')->pluck('graduation_year'),
-            'countries' => Alumni::query()->whereNotNull('country')->distinct()->orderBy('country')->pluck('country'),
         ]);
     }
 
@@ -154,8 +143,8 @@ class AlumniController extends Controller
                 'nullable',
                 'sometimes',
                 File::image()
-                    ->max('2mb')
-                    ->dimensions(Rule::dimensions()->maxWidth(4000)->maxHeight(4000)),
+                                        ->max('8mb')
+                    ->dimensions(Rule::dimensions()->maxWidth(5000)->maxHeight(5000)),
             ],
         ];
     }

@@ -58,7 +58,7 @@
                             </span>
                         </div>
 
-                        <span class="sr-only" id="podium-{{ $loop->index }}-name">{{ \Illuminate\Support\Number::ordinal($entry->leaderboard_rank) }} place</span>
+                        <span class="sr-only">{{ \Illuminate\Support\Number::ordinal($entry->leaderboard_rank) }} place</span>
 
                         {{-- Profile Photo --}}
                         <div class="mt-8 flex justify-center">
@@ -108,7 +108,7 @@
 
             {{-- Filters --}}
             <form method="GET" action="{{ route('leaderboard.index') }}" class="rounded-lg border border-navy-100 bg-white p-6 shadow-sm" aria-label="Leaderboard filters">
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     {{-- Search --}}
                     <div class="sm:col-span-2 lg:col-span-3">
                         <label for="q" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Search</label>
@@ -151,17 +151,6 @@
                             <option value="">All Batches</option>
                             @foreach ($batches as $batch)
                                 <option value="{{ $batch }}" @selected($filters['batch'] === (string) $batch)>{{ $batch }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Graduation Year --}}
-                    <div>
-                        <label for="graduation_year" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Graduation Year</label>
-                        <select id="graduation_year" name="graduation_year" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
-                            <option value="">All Years</option>
-                            @foreach ($graduationYears as $year)
-                                <option value="{{ $year }}" @selected($filters['graduation_year'] === (string) $year)>{{ $year }}</option>
                             @endforeach
                         </select>
                     </div>

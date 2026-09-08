@@ -51,7 +51,7 @@ class NewsFactory extends Factory
                 'Kofi Adjei',
                 'Ngozi Eze',
                 'Tom Bello',
-                'Dr. Grace Adeyemi',
+                'Professor Milki Amatul Mogni',
                 'Department Office',
                 'EDAA Secretariat',
             ]),

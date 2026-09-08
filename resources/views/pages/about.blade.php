@@ -80,7 +80,8 @@
                         ['year' => '1921', 'text' => 'With the establishment of the University of Dhaka, the school is upgraded to a college and renamed Islamia Intermediate College.'],
                         ['year' => '1968', 'text' => 'The college section is named Government College, Dhaka.'],
                         ['year' => '1972', 'text' => 'The institution receives its current name — Kabi Nazrul Government College (KNGC).'],
-                        ['year' => '2017–2025', 'text' => 'KNGC is affiliated with the University of Dhaka, deepening its academic tradition.'],
+                        ['year' => '2002', 'text' => 'The Department of English is formally established, beginning the BA in English programme that would produce generations of graduates.'],
+                        ['year' => '2017', 'text' => 'The first Alumni Committee of the English Department is formed, laying the foundation for what would become EDAA-KNGC.'],
                         ['year' => 'Today', 'text' => 'The English Department Alumni Association KNGC unites generations of graduates under one constitution — non-political, non-profit, and devoted to welfare.'],
                     ] as $milestone)
                         <li class="flex gap-5">
@@ -134,35 +135,19 @@
         <div class="container-page">
             <x-section-heading
                 eyebrow="Membership"
-                title="Join the Association"
-                description="Per Article 4 of our constitution, applicants complete the prescribed form and pay the required fee. Teachers of the English Department serve as Honorary Members."
+                title="Join the Family"
+                description="Every former student of the English Department, KNGC, is already a part of us. We are more than an association — we are a family bonded by shared memories, ideas, and the love of literature. If you studied here, you belong."
                 align="center"
             />
 
-            <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ([
-                    [
-                        'title' => 'General Member',
-                        'detail' => 'For former students of the English Department, KNGC.',
-                        'fee' => 'BDT 50 — one-time registration fee',
-                    ],
-                    [
-                        'title' => 'Executive Committee Member',
-                        'detail' => 'General members holding at least a Bachelor’s degree are eligible to contest Executive Committee elections.',
-                        'fee' => 'BDT 100 — monthly',
-                    ],
-                    [
-                        'title' => 'Lifetime & Honorary Members',
-                        'detail' => 'Lifetime membership is determined by the Executive Committee; teachers of the Department are Honorary Members.',
-                        'fee' => 'As decided by the Executive Committee',
-                    ],
-                ] as $tier)
-                    <div class="card-lift rounded-lg border border-navy-100 bg-white p-8 shadow-sm">
-                        <h3 class="font-serif text-xl font-semibold text-navy-950">{{ $tier['title'] }}</h3>
-                        <p class="mt-3 text-sm leading-relaxed text-ink-soft">{{ $tier['detail'] }}</p>
-                        <p class="mt-5 inline-flex rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold-300">{{ $tier['fee'] }}</p>
-                    </div>
-                @endforeach
+            <div class="mx-auto mt-12 max-w-3xl rounded-lg border border-navy-100 bg-white p-8 sm:p-10 shadow-sm">
+                <h3 class="font-serif text-xl font-semibold text-navy-950">How to Join</h3>
+                <p class="mt-4 leading-relaxed text-ink-soft">
+                    Joining is simple. Complete the membership form and pay a one-time registration fee. That's it — you're one of us. Whether you graduated decades ago or just recently, your journey with the English Department didn't end at graduation. It continues here.
+                </p>
+                <p class="mt-4 leading-relaxed text-ink-soft">
+                    We welcome everyone who carries the spirit of this department. Our teachers are Honorary Members, and those who wish to serve on the Executive Committee can stand for election. But membership itself is for every ex-student — no barriers, no conditions. Just come home.
+                </p>
             </div>
 
             <p class="mx-auto mt-10 max-w-3xl text-center text-sm leading-relaxed text-ink-soft">
@@ -187,7 +172,7 @@
             />
             <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
                 <x-button href="{{ route('contact') }}" variant="gold" size="lg" :icon="true">Become a Member</x-button>
-                <x-button href="{{ route('committee.index') }}" variant="outline-on-dark" size="lg">Meet the Committee</x-button>
+                <x-button href="{{ route('committees.index') }}" variant="outline-on-dark" size="lg">Meet the Committee</x-button>
             </div>
         </div>
     </section>

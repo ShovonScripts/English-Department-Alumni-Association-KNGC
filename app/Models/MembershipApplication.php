@@ -28,15 +28,17 @@ class MembershipApplication extends Model
         'current_organization',
         'profession',
         'current_designation',
-        'address',
         'city',
         'country',
-        'date_of_birth',
         'application_message',
         'alumni_document_path',
         'alumni_document_original_name',
         'alumni_document_size',
         'alumni_document_mime_type',
+        'profile_photo_path',
+        'profile_photo_original_name',
+        'profile_photo_size',
+        'profile_photo_mime_type',
         'status',
         'admin_notes',
         'rejection_reason',
@@ -160,6 +162,15 @@ class MembershipApplication extends Model
                 }
             })
             ->exists();
+    }
+
+    // ── Accessors ────────────────────────────────────────────────────
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        return $this->profile_photo_path
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->profile_photo_path)
+            : null;
     }
 
     // ── Status Helpers ──────────────────────────────────────────────

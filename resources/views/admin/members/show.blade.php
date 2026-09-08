@@ -80,6 +80,10 @@
                         <dd class="mt-1 text-sm text-navy-950">{{ $membership->tier?->badge_label ? $membership->tier->badge_label.' — '.$membership->tier->name : 'Not assigned' }}</dd>
                     </div>
                     <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Verified Contributions</dt>
+                        <dd class="mt-1 text-sm font-semibold text-navy-950">৳{{ number_format($membership->verifiedContributionTotal()) }}</dd>
+                    </div>
+                    <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Status</dt>
                         <dd class="mt-1">
                             @php
@@ -125,23 +129,15 @@
                         <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Admin Notes</dt>
                         <dd class="mt-1 text-sm leading-relaxed text-navy-950">{{ $membership->notes ?: 'No notes recorded.' }}</dd>
                     </div>
-                    <div>
-                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Current Applicable Fee</dt>
-                        <dd class="mt-1 text-sm font-semibold text-navy-950">
-                            @if ($currentFee)
-                                {{ $currentFee->formattedAmount() }} — {{ $currentFee->frequencyLabel() }}
-                                @if ($currentFee->amount == 0)
-                                    <span class="block mt-1 text-xs font-normal text-ink-soft">{{ $currentFee->description }}</span>
-                                @endif
-                            @else
-                                <span class="font-normal text-ink-soft">No active fee plan</span>
-                            @endif
-                        </dd>
-                    </div>
                 </dl>
 
                 <div class="mt-10 flex flex-wrap items-center gap-3 border-t border-navy-100 pt-8">
                     <x-button href="{{ route('admin.members.edit', $membership) }}" variant="navy">Edit Membership</x-button>
+
+                    <form method="POST" action="{{ route('admin.members.recalculate-tier', $membership) }}">
+                        @csrf
+                        <x-button type="submit" variant="outline">Recalculate Tier</x-button>
+                    </form>
 
                     <form method="POST" action="{{ route('admin.members.public-toggle', $membership) }}">
                         @csrf

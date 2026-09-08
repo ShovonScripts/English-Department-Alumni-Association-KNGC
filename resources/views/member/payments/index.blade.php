@@ -40,7 +40,7 @@
                                                     {{ $payment->paid_at?->format('M d, Y') ?? '-' }}
                                                 </td>
                                                 <td class="px-5 py-4 text-sm text-navy-900">
-                                                    {{ $payment->feePlan?->name ?? $payment->description ?? 'Payment' }}
+                                                    {{ $payment->description ?? 'Payment' }}
                                                 </td>
                                                 <td class="whitespace-nowrap px-5 py-4 text-sm text-ink-soft capitalize">
                                                     {{ $payment->payment_method ?? '-' }}

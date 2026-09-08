@@ -132,7 +132,7 @@
                                         {{ $application->status->label() }}
                                     </span>
                                 </td>
-                                <td class="whitespace-nowrap px-6 py-3.5 text-ink-soft">{{ $application->submitted_at->format('d M Y') }}</td>
+                                <td class="whitespace-nowrap px-6 py-3.5 text-ink-soft">{{ $application->submitted_at?->format('d M Y') ?? '—' }}</td>
                                 <td class="whitespace-nowrap px-6 py-3.5 text-ink-soft">{{ $application->reviewed_at?->format('d M Y') ?? '—' }}</td>
                                 <td class="whitespace-nowrap px-6 py-3.5 text-right">
                                     <a href="{{ route('admin.membership-applications.show', $application) }}" class="focus-ring inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-semibold text-navy-600 transition-colors hover:bg-navy-50">

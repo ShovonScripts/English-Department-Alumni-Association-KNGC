@@ -7,30 +7,21 @@
     <h2 class="font-serif text-xl font-semibold text-navy-950">Collection Details</h2>
     <p class="mt-1 text-sm text-ink-soft">
         @if ($payment)
-            Payment number and member/plan relationships are permanent financial identifiers.
+            Payment number and member relationships are permanent financial identifiers.
         @else
-            Record money collected manually by an authorized administrator. This is an association due, not a website purchase.
+            Record money collected manually by an authorized administrator. Select a member and enter the amount.
         @endif
     </p>
 
-    {{-- Alpine state: filters fee plans by the member's membership type and
-         surfaces the applicable amount for the selected plan. --}}
     <div
         x-data="{
-            membershipOptions: @js($memberships->map(fn ($m) => ['id' => $m->id, 'type' => $m->membership_type_id, 'label' => trim(($m->alumni?->full_name ?? 'Unknown').' — '.$m->membership_number.' · '.($m->type?->name ?? ''))])->values()->all()),
-            plans: @js($feePlans->map(fn ($p) => ['id' => $p->id, 'type' => $p->membership_type_id, 'name' => $p->name.' ('.$p->frequency->label().')', 'amount' => (float) $p->amount, 'active' => $p->is_active])->values()->all()),
+            membershipOptions: @js($memberships->map(fn ($m) => ['id' => $m->id, 'label' => trim(($m->alumni?->full_name ?? 'Unknown').' — '.$m->membership_number.' · '.($m->type?->name ?? ''))])->values()->all()),
             membershipId: @js(old('membership_id', $payment?->membership_id)),
-            planId: @js(old('fee_plan_id', $payment?->fee_plan_id)),
             get selectedMembership() { return this.membershipOptions.find(m => m.id == this.membershipId) || null },
-            get selectedPlan() { return this.plans.find(p => p.id == this.planId) || null },
-            get allowedPlans() {
-                if (!this.selectedMembership) return []
-                return this.plans.filter(p => p.type === this.selectedMembership.type)
-            },
         }"
     >
         <div class="mt-6 grid gap-6 sm:grid-cols-2">
-            <div>
+            <div class="sm:col-span-2">
                 <label for="membership_id" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Member *</label>
                 @if ($payment)
                     <div class="rounded-md border border-navy-200 bg-cream px-4 py-2.5 text-sm font-medium text-navy-950">
@@ -43,7 +34,7 @@
                             <option :value="option.id" x-text="option.label" :selected="option.id === membershipId"></option>
                         </template>
                     </select>
-                    <p class="mt-1.5 text-xs text-ink-soft">Only registered memberships can receive collections.</p>
+                    <p class="mt-1.5 text-xs text-ink-soft">Select the member who made this payment.</p>
                 @endif
                 @error('membership_id')
                     <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
@@ -51,33 +42,8 @@
             </div>
 
             <div>
-                <label for="fee_plan_id" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Plan *</label>
-                @if ($payment)
-                    <div class="rounded-md border border-navy-200 bg-cream px-4 py-2.5 text-sm font-medium text-navy-950">
-                        {{ $payment->feePlan?->name }} <span class="text-ink-soft">(৳{{ number_format((float) $payment->feePlan?->amount) }})</span>
-                    </div>
-                @else
-                    <select id="fee_plan_id" name="fee_plan_id" required x-model.number="planId" class="{{ $inputClass }} {{ $errors->has('fee_plan_id') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : '' }}">
-                        <option value="">Select a fee plan…</option>
-                        <template x-for="plan in allowedPlans" :key="plan.id">
-                            <option :value="plan.id" x-text="(plan.active ? '' : '[Inactive] ') + plan.name + ' — ৳' + Number(plan.amount).toLocaleString()"></option>
-                        </template>
-                    </select>
-                    <p class="mt-1.5 text-xs text-ink-soft">Historical (inactive/expired) plans of the same type remain selectable.</p>
-                @endif
-                @error('fee_plan_id')
-                    <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="rounded-md border border-navy-200 bg-cream px-4 py-3 text-sm sm:col-span-2" x-show="selectedPlan" x-cloak>
-                <span class="font-medium text-navy-950">Applicable Fee:</span>
-                <span class="font-semibold text-maroon-700" x-text="selectedPlan ? '৳' + Number(selectedPlan.amount).toLocaleString() : '—'"></span>
-            </div>
-
-            <div>
-                <label for="amount" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Amount Collected (৳) *</label>
-                <input type="number" id="amount" name="amount" x-ref="amount" value="{{ old('amount', $payment?->amount) }}" required min="0" step="0.01" placeholder="e.g. 50" class="{{ $inputClass }} {{ $errors->has('amount') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : '' }}">
+                <label for="amount" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Amount Collected (BDT) *</label>
+                <input type="number" id="amount" name="amount" value="{{ old('amount', $payment?->amount) }}" required min="0" step="0.01" placeholder="e.g. 500" class="{{ $inputClass }} {{ $errors->has('amount') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : '' }}">
                 @error('amount')
                     <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
                 @enderror

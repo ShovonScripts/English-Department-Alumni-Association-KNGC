@@ -901,7 +901,7 @@ class Feature20QAAuditTest extends TestCase
         $data = $this->createMemberWithUser([], [], ['email_verified_at' => null]);
 
         $this->actingAs($data['user']);
-        $this->get(route('member.dashboard'))->assertOk();
+        $this->get(route('member.dashboard'))->assertRedirect(route('member.verification.notice'));
     }
 
     public function test_verification_notice_route(): void
@@ -909,9 +909,9 @@ class Feature20QAAuditTest extends TestCase
         $data = $this->createMemberWithUser([], [], ['email_verified_at' => null]);
         $this->actingAs($data['user']);
 
-        // View member.auth.verify-email is missing — this is a real bug
+        // View member.auth.verify-email now exists
         $response = $this->get(route('member.verification.notice'));
-        $this->assertContains($response->getStatusCode(), [200, 500]);
+        $this->assertContains($response->getStatusCode(), [200]);
     }
 
     public function test_already_verified_redirects_from_notice(): void
@@ -1037,7 +1037,7 @@ class Feature20QAAuditTest extends TestCase
 
         foreach ($routes as $route) {
             $this->get(route($route))
-                ->assertRedirect(route('member.login'));
+                ->assertRedirect(route('member.account-status'));
         }
     }
 

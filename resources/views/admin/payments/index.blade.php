@@ -53,7 +53,7 @@
     </div>
 
     <form method="GET" action="{{ route('admin.payments.index') }}" class="rounded-lg border border-navy-100 bg-white p-6 shadow-sm">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-7">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
             <div class="lg:col-span-2">
                 <label for="search" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Search</label>
                 <input
@@ -87,16 +87,6 @@
             </div>
 
             <div>
-                <label for="fee_plan_id" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Plan</label>
-                <select id="fee_plan_id" name="fee_plan_id" class="w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
-                    <option value="">All</option>
-                    @foreach ($feePlans as $plan)
-                        <option value="{{ $plan->id }}" @selected($filters['fee_plan_id'] == $plan->id)>{{ $plan->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
                 <label for="date_from" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">From</label>
                 <input type="date" id="date_from" name="date_from" value="{{ $filters['date_from'] }}" class="w-full rounded-md border border-navy-300 bg-white px-3 py-2.5 text-sm text-navy-950 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none">
             </div>
@@ -120,7 +110,6 @@
                             <th class="px-6 py-3.5 font-semibold">Payment #</th>
                             <th class="px-6 py-3.5 font-semibold">Member</th>
                             <th class="px-6 py-3.5 font-semibold">Membership #</th>
-                            <th class="px-6 py-3.5 font-semibold">Fee Plan</th>
                             <th class="px-6 py-3.5 font-semibold">Amount</th>
                             <th class="px-6 py-3.5 font-semibold">Status</th>
                             <th class="px-6 py-3.5 font-semibold">Paid At</th>
@@ -134,7 +123,6 @@
                                 <td class="px-6 py-4 font-mono text-xs font-semibold text-navy-900">{{ $payment->payment_number }}</td>
                                 <td class="px-6 py-4 font-medium text-navy-950">{{ $payment->membership?->alumni?->full_name ?? '—' }}</td>
                                 <td class="px-6 py-4 font-mono text-xs text-ink-soft">{{ $payment->membership?->membership_number ?? '—' }}</td>
-                                <td class="px-6 py-4 text-navy-950">{{ $payment->feePlan?->name ?? '—' }}</td>
                                 <td class="px-6 py-4 font-semibold text-navy-950">{{ $payment->formattedAmount() }}</td>
                                 <td class="px-6 py-4">
                                     @php
