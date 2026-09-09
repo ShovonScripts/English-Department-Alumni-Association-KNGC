@@ -113,22 +113,16 @@
 
     <div class="mt-6">
         <label for="cover_image" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Cover image</label>
-        <div x-data="{ preview: @js($publication?->cover_image_url), updatePreview(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => this.preview = e.target.result; reader.readAsDataURL(file); } }">
             <div class="flex items-center gap-4">
-                <template x-if="preview">
-                    <img :src="preview" alt="" class="h-24 w-40 rounded-lg object-cover ring-4 ring-gold-500/30">
-                </template>
-                <template x-if="!preview">
-                    <span class="flex h-24 w-40 items-center justify-center rounded-lg border-2 border-dashed border-navy-200 bg-cream text-xs text-ink-soft" aria-hidden="true">
-                        No image
-                    </span>
-                </template>
+                <img id="preview-img" src="{{ $publication?->cover_image_url ?? '' }}" alt="" class="h-24 w-40 rounded-lg object-cover ring-4 ring-gold-500/30 {{ $publication?->cover_image_url ? '' : 'hidden' }}">
+                <span id="preview-fallback" class="flex h-24 w-40 items-center justify-center rounded-lg border-2 border-dashed border-navy-200 bg-cream text-xs text-ink-soft {{ $publication?->cover_image_url ? 'hidden' : '' }}" aria-hidden="true">
+                    No image
+                </span>
                 <input
                     type="file"
                     id="cover_image"
                     name="cover_image"
                     accept="image/*"
-                    @change="updatePreview"
                     class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800"
                 >
             </div>
@@ -179,3 +173,27 @@
         @endif
     </div>
 </section>
+
+@push('scripts')
+    <script>
+    (function() {
+        const input = document.getElementById('cover_image');
+        const img = document.getElementById('preview-img');
+        const fallback = document.getElementById('preview-fallback');
+        if (input && img) {
+            input.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        img.classList.remove('hidden');
+                        if (fallback) fallback.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    })();
+    </script>
+@endpush

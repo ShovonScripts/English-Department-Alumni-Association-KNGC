@@ -160,7 +160,8 @@
 }
 
 .announcement-scroll {
-    animation: announcement-scroll 25s linear infinite;
+    will-change: transform;
+    animation: announcement-scroll 18s linear infinite;
 }
 
 .announcement-track:hover .announcement-scroll {

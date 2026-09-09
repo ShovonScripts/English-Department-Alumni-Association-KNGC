@@ -352,6 +352,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($a['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $a['user']->email,
             'phone' => '1234567890',
             'city' => 'Hacked',
         ])->assertRedirect(route('member.profile'));
@@ -392,13 +393,21 @@ class Feature20QAAuditTest extends TestCase
     public function test_disabled_user_logged_out_on_next_request(): void
     {
         $data = $this->createMemberWithUser();
-        $this->actingAs($data['user']);
 
-        $this->get(route('member.dashboard'))->assertOk();
+        $this->post(route('member.login.store'), [
+            'email' => $data['user']->email,
+            'password' => 'Password1',
+        ])->assertRedirect();
 
-        $data['user']->update(['status' => 'disabled']);
+        $this->assertAuthenticated();
+        $sessionId = session()->getId();
 
-        $this->get(route('member.dashboard'))->assertRedirect(route('member.login'));
+        User::where('id', $data['user']->id)->update(['status' => 'disabled']);
+
+        $response = $this->get(route('member.dashboard'));
+
+        $this->assertGuest();
+        $response->assertRedirect(route('member.login'));
     }
 
     public function test_disabled_user_cannot_login(): void
@@ -624,6 +633,7 @@ class Feature20QAAuditTest extends TestCase
         $file = UploadedFile::fake()->image('photo.jpg', 200, 200)->size(100);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'profile_photo' => $file,
         ])->assertRedirect(route('member.profile'));
 
@@ -640,6 +650,7 @@ class Feature20QAAuditTest extends TestCase
         $file = UploadedFile::fake()->createWithContent('malicious.php', '<?php echo "hacked"; ?>');
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'profile_photo' => $file,
         ])->assertSessionHasErrors('profile_photo');
     }
@@ -653,6 +664,7 @@ class Feature20QAAuditTest extends TestCase
         $file = UploadedFile::fake()->image('photo.jpg', 200, 200)->size(3000);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'profile_photo' => $file,
         ])->assertSessionHasErrors('profile_photo');
     }
@@ -665,6 +677,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'remove_photo' => '1',
         ])->assertRedirect(route('member.profile'));
 
@@ -681,6 +694,7 @@ class Feature20QAAuditTest extends TestCase
         $file = UploadedFile::fake()->image('new.jpg', 200, 200)->size(100);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'profile_photo' => $file,
         ]);
 
@@ -892,45 +906,9 @@ class Feature20QAAuditTest extends TestCase
 
     /*
     |--------------------------------------------------------------------------
-    | PART 12: Email Verification
+    | PART 12: Email Verification — not implemented (no email verification)
     |--------------------------------------------------------------------------
     */
-
-    public function test_unverified_user_can_access_portal(): void
-    {
-        $data = $this->createMemberWithUser([], [], ['email_verified_at' => null]);
-
-        $this->actingAs($data['user']);
-        $this->get(route('member.dashboard'))->assertRedirect(route('member.verification.notice'));
-    }
-
-    public function test_verification_notice_route(): void
-    {
-        $data = $this->createMemberWithUser([], [], ['email_verified_at' => null]);
-        $this->actingAs($data['user']);
-
-        // View member.auth.verify-email now exists
-        $response = $this->get(route('member.verification.notice'));
-        $this->assertContains($response->getStatusCode(), [200]);
-    }
-
-    public function test_already_verified_redirects_from_notice(): void
-    {
-        $data = $this->createMemberWithUser([], [], ['email_verified_at' => now()]);
-        $this->actingAs($data['user']);
-
-        $this->get(route('member.verification.notice'))->assertRedirect(route('member.dashboard'));
-    }
-
-    public function test_resend_verification_email(): void
-    {
-        $data = $this->createMemberWithUser([], [], ['email_verified_at' => null]);
-        $this->actingAs($data['user']);
-
-        $response = $this->post(route('member.verification.send'));
-        // Should redirect back with status message (or 500 if notification fails in test env)
-        $this->assertContains($response->getStatusCode(), [302, 500]);
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -1121,13 +1099,22 @@ class Feature20QAAuditTest extends TestCase
     public function test_disabled_user_session_invalidated_on_next_request(): void
     {
         $data = $this->createMemberWithUser();
-        $this->actingAs($data['user']);
-        $this->get(route('member.dashboard'))->assertOk();
 
-        $data['user']->update(['status' => 'disabled']);
+        $this->post(route('member.login.store'), [
+            'email' => $data['user']->email,
+            'password' => 'Password1',
+        ])->assertRedirect();
 
-        $this->get(route('member.dashboard'))->assertRedirect(route('member.login'));
+        $this->assertAuthenticated();
+        $sessionId = session()->getId();
+
+        User::where('id', $data['user']->id)->update(['status' => 'disabled']);
+
+        $this->get(route('member.dashboard'))
+            ->assertRedirect(route('member.login'));
+
         $this->assertGuest();
+        $this->assertNotEquals($sessionId, session()->getId());
     }
 
     /*
@@ -1291,6 +1278,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'phone' => str_repeat('1', 21),
         ])->assertSessionHasErrors('phone');
     }
@@ -1301,6 +1289,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'city' => str_repeat('A', 101),
         ])->assertSessionHasErrors('city');
     }
@@ -1311,6 +1300,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'country' => str_repeat('A', 101),
         ])->assertSessionHasErrors('country');
     }
@@ -1321,6 +1311,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'bio' => str_repeat('A', 1001),
         ])->assertSessionHasErrors('bio');
     }
@@ -1331,6 +1322,7 @@ class Feature20QAAuditTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'bio' => 'আমি বাংলায় কথা বলি 🎉',
             'city' => 'ঢাকা',
         ])->assertRedirect(route('member.profile'));

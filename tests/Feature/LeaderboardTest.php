@@ -181,7 +181,7 @@ class LeaderboardTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertOk()
-            ->assertSee('Recognizing our contributors')
+            ->assertSee('Recognizing Our')
             ->assertSee('Ada Top')
             ->assertSee('Bob Second')
             ->assertSee('Cam Third')

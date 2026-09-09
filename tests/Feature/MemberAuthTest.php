@@ -257,7 +257,7 @@ class MemberAuthTest extends TestCase
             'email' => 'dash@test.com',
             'password' => 'Password1',
             'password_confirmation' => 'Password1',
-        ])->assertRedirect(route('member.verification.notice'));
+        ])->assertRedirect(route('member.dashboard'));
     }
 
     /*
@@ -646,6 +646,7 @@ class MemberAuthTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'phone' => '1234567890',
             'city' => 'Dhaka',
             'country' => 'Bangladesh',
@@ -669,6 +670,7 @@ class MemberAuthTest extends TestCase
         $this->actingAs($data['user']);
 
         $this->put(route('member.profile.update'), [
+            'email' => $data['user']->email,
             'remove_photo' => '1',
         ])->assertRedirect(route('member.profile'));
 

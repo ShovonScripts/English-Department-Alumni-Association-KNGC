@@ -13,8 +13,6 @@
 ])
 
 <article 
-    x-data="{}" 
-    x-init="if (window.VanillaTilt) VanillaTilt.init($el, { max: 8, speed: 300, glare: true, 'max-glare': 0.12, scale: 1.02 })"
     class="card-lift shine group relative flex h-full flex-col items-center rounded-2xl border border-navy-100 bg-white/95 p-6 sm:p-7 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:border-gold-400/60 hover:shadow-xl tilt-card">
     
     @if ($href)

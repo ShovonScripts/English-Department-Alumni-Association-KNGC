@@ -43,7 +43,7 @@ class PublicationCategoryController extends Controller
 
     public function edit(PublicationCategory $publicationCategory)
     {
-        return view('admin.publication-categories.edit', ['category' => $publicationCategory]);
+        return view('admin.publication-categories.edit', compact('publicationCategory'));
     }
 
     public function update(Request $request, PublicationCategory $publicationCategory)

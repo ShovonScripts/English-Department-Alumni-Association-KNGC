@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MembershipTierSeeder::class);
         $this->call(CommitteeSeeder2024::class);
         $this->call(DemoContentSeeder::class);
+        $this->call(ExpenseCategorySeeder::class);
     }
 }

@@ -511,7 +511,7 @@ class MemberDirectoryTest extends TestCase
         $response = $this->get(route('membership'));
         $response->assertOk();
         $response->assertSee('Membership Categories');
-        $response->assertSee('Membership Tiers');
+        $response->assertSee('Membership Recognition Tiers');
     }
 
     // ──────────────────────────────────────────────────────────────

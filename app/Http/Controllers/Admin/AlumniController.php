@@ -19,10 +19,10 @@ class AlumniController extends Controller
 
         $alumni = Alumni::query()
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('student_id', 'like', "%{$search}%")
-                    ->orWhere('organization', 'like', "%{$search}%")
-                    ->orWhere('profession', 'like', "%{$search}%");
+                $query->where('full_name', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('student_id', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('organization', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('profession', 'like', "%" . $this->escapeLike($search) . "%");
             }))
             ->when($batch, fn ($query, $batch) => $query->where('batch', $batch))
             ->when($status, fn ($query, $status) => $query->where('status', $status))
@@ -85,11 +85,11 @@ class AlumniController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
 
         if ($request->hasFile('profile_photo')) {
+            $newPath = $request->file('profile_photo')->store('alumni', 'public');
             if ($alumni->profile_photo) {
                 Storage::disk('public')->delete($alumni->profile_photo);
             }
-
-            $data['profile_photo'] = $request->file('profile_photo')->store('alumni', 'public');
+            $data['profile_photo'] = $newPath;
         }
 
         $alumni->update($data);

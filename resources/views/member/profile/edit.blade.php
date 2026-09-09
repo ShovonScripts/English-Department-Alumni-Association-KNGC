@@ -58,13 +58,13 @@
                         @method('PUT')
 
                         {{-- Profile Photo --}}
-                        <div class="premium-card p-6" x-data="photoPreview()">
+                        <div class="premium-card p-6">
                             <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Profile Photo</h2>
                             <p class="text-sm text-ink-soft mb-5">This appears on your public profile and membership card.</p>
                             <div class="flex items-start gap-6">
-                                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-full bg-navy-100 ring-2 ring-navy-200 shadow-sm">
-                                    <img x-show="previewUrl" :src="previewUrl" alt="Preview" class="h-full w-full object-cover">
-                                    <div x-show="!previewUrl" class="h-full w-full">
+                                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-full bg-navy-100 ring-2 ring-navy-200 shadow-sm" id="photo-preview-container">
+                                    <img id="photo-preview-img" src="{{ $alumni->profile_photo_url ?? '' }}" alt="Preview" class="h-full w-full object-cover {{ $alumni->profile_photo ? '' : 'hidden' }}">
+                                    <div id="photo-preview-fallback" class="h-full w-full {{ $alumni->profile_photo ? 'hidden' : '' }}">
                                         @if ($alumni->profile_photo)
                                             <img src="{{ $alumni->profile_photo_url }}" alt="{{ $alumni->full_name }}" class="h-full w-full object-cover">
                                         @else
@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <label for="profile_photo" class="block text-sm font-medium text-navy-900">Upload new photo</label>
-                                    <input type="file" id="profile_photo" name="profile_photo" accept="image/*" @change="updatePreview"
+                                    <input type="file" id="profile_photo" name="profile_photo" accept="image/*"
                                            class="mt-1.5 block w-full text-sm text-ink-soft file:mr-4 file:rounded-lg file:border-0 file:bg-maroon-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-maroon-700 hover:file:bg-maroon-100 file:transition-colors" />
                                     <p class="mt-1.5 text-xs text-ink-soft">JPG, PNG, or WebP. Max 2MB.</p>
                                     @if ($alumni->profile_photo)
@@ -163,7 +163,7 @@
                                 <textarea id="bio" name="bio" rows="4" maxlength="1000"
                                           class="input-field resize-none"
                                           placeholder="Tell us a bit about yourself...">{{ old('bio', $alumni->bio) }}</textarea>
-                                <p class="mt-1.5 text-xs text-ink-soft">Max 1000 characters. <span x-text="document.getElementById('bio').value.length" class="font-medium text-navy-600">0</span>/1000</p>
+                                <p class="mt-1.5 text-xs text-ink-soft">Max 1000 characters. <span id="bio-count" class="font-medium text-navy-600">0</span>/1000</p>
                             </div>
                         </div>
 
@@ -178,7 +178,7 @@
                     </form>
 
                     {{-- Authoritative Records --}}
-                    <div class="premium-card p-6" x-data="{ openCorrection: false, correctionField: '', fieldLabel: '' }">
+                    <div class="premium-card p-6">
                         <h2 class="font-serif text-lg font-semibold text-navy-950 mb-1">Authoritative Records</h2>
                         <p class="text-sm text-ink-soft mb-6">These fields are tied to official alumni records and cannot be directly modified. If there is an error, you may request a correction.</p>
 
@@ -193,29 +193,29 @@
                                     <p class="text-[11px] font-semibold uppercase tracking-wider text-ink-soft mb-1">{{ $item['label'] }}</p>
                                     <div class="flex items-center justify-between gap-2">
                                         <span class="text-sm font-medium text-navy-900 truncate">{{ $item['value'] }}</span>
-                                        <button @click="openCorrection = true; correctionField = '{{ $item['field'] }}'; fieldLabel = '{{ $item['label'] }}'" type="button" class="shrink-0 text-xs font-medium text-maroon-700 hover:text-maroon-800 hover:underline transition-colors">Correct</button>
+                                        <button type="button" class="shrink-0 text-xs font-medium text-maroon-700 hover:text-maroon-800 hover:underline transition-colors correction-trigger" data-field="{{ $item['field'] }}" data-label="{{ $item['label'] }}">Correct</button>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
 
                         {{-- Correction Modal --}}
-                        <div x-show="openCorrection" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-900/50 backdrop-blur-sm">
-                            <div @click.away="openCorrection = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div id="correction-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-navy-900/50 backdrop-blur-sm">
+                            <div id="correction-modal-panel" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-200">
                                 <form method="POST" action="{{ route('member.correction-requests.store') }}">
                                     @csrf
-                                    <input type="hidden" name="requested_field" x-bind:value="correctionField">
+                                    <input type="hidden" name="requested_field" id="correction-field">
 
                                     <div class="px-6 py-4 border-b border-navy-100 flex items-center justify-between">
                                         <h3 class="font-serif text-lg font-semibold text-navy-900">Request Correction</h3>
-                                        <button type="button" @click="openCorrection = false" class="flex h-8 w-8 items-center justify-center rounded-lg text-navy-400 hover:text-navy-600 hover:bg-navy-50 transition-colors">
+                                        <button type="button" id="correction-close" class="flex h-8 w-8 items-center justify-center rounded-lg text-navy-400 hover:text-navy-600 hover:bg-navy-50 transition-colors">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
                                     <div class="p-6 space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-navy-900">Field</label>
-                                            <p class="mt-1 text-sm text-ink-soft font-medium" x-text="fieldLabel"></p>
+                                            <p class="mt-1 text-sm text-ink-soft font-medium" id="correction-label"></p>
                                         </div>
                                         <div>
                                             <label for="requested_value" class="block text-sm font-medium text-navy-900">Correct Value</label>
@@ -229,7 +229,7 @@
                                         </div>
                                     </div>
                                     <div class="px-6 py-4 bg-navy-50/50 border-t border-navy-100 flex justify-end gap-3">
-                                        <button type="button" @click="openCorrection = false" class="btn btn-secondary">Cancel</button>
+                                        <button type="button" id="correction-cancel" class="btn btn-secondary">Cancel</button>
                                         <button type="submit" class="btn btn-primary">Submit Request</button>
                                     </div>
                                 </form>
@@ -243,19 +243,86 @@
 
     @push('scripts')
         <script>
-            function photoPreview() {
-                return {
-                    previewUrl: null,
-                    updatePreview(event) {
-                        const file = event.target.files[0];
-                        if (file) {
-                            this.previewUrl = URL.createObjectURL(file);
-                        } else {
-                            this.previewUrl = null;
-                        }
+        (function() {
+            'use strict';
+
+            const profilePhotoInput = document.getElementById('profile_photo');
+            const photoPreviewImg = document.getElementById('photo-preview-img');
+            const photoPreviewFallback = document.getElementById('photo-preview-fallback');
+            const bioTextarea = document.getElementById('bio');
+            const bioCount = document.getElementById('bio-count');
+            const correctionModal = document.getElementById('correction-modal');
+            const correctionModalPanel = document.getElementById('correction-modal-panel');
+            const correctionField = document.getElementById('correction-field');
+            const correctionLabel = document.getElementById('correction-label');
+            const correctionClose = document.getElementById('correction-close');
+            const correctionCancel = document.getElementById('correction-cancel');
+
+            if (profilePhotoInput && photoPreviewImg) {
+                profilePhotoInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            photoPreviewImg.src = e.target.result;
+                            photoPreviewImg.classList.remove('hidden');
+                            if (photoPreviewFallback) {
+                                photoPreviewFallback.classList.add('hidden');
+                            }
+                        };
+                        reader.readAsDataURL(file);
                     }
-                }
+                });
             }
+
+            if (bioTextarea && bioCount) {
+                bioTextarea.addEventListener('input', function() {
+                    bioCount.textContent = bioTextarea.value.length;
+                });
+                bioCount.textContent = bioTextarea.value.length;
+            }
+
+            function openCorrectionModal(field, label) {
+                correctionField.value = field;
+                correctionLabel.textContent = label;
+                correctionModal.classList.remove('hidden');
+                correctionModal.classList.add('flex');
+                setTimeout(function() {
+                    correctionModalPanel.classList.remove('scale-95', 'opacity-0');
+                    correctionModalPanel.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeCorrectionModal() {
+                correctionModalPanel.classList.remove('scale-100', 'opacity-100');
+                correctionModalPanel.classList.add('scale-95', 'opacity-0');
+                setTimeout(function() {
+                    correctionModal.classList.add('hidden');
+                    correctionModal.classList.remove('flex');
+                }, 200);
+            }
+
+            document.querySelectorAll('.correction-trigger').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    openCorrectionModal(btn.getAttribute('data-field'), btn.getAttribute('data-label'));
+                });
+            });
+
+            if (correctionClose) correctionClose.addEventListener('click', closeCorrectionModal);
+            if (correctionCancel) correctionCancel.addEventListener('click', closeCorrectionModal);
+
+            correctionModal.addEventListener('click', function(e) {
+                if (e.target === correctionModal) {
+                    closeCorrectionModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !correctionModal.classList.contains('hidden')) {
+                    closeCorrectionModal();
+                }
+            });
+        })();
         </script>
     @endpush
 </x-layouts.app>

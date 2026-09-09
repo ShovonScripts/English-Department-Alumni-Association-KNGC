@@ -223,10 +223,6 @@
                             <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Verified At</dt>
                             <dd class="mt-1 text-sm text-navy-950">{{ $membership->alumni->user->verified_at?->format('M j, Y') ?? '—' }}</dd>
                         </div>
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Last Login</dt>
-                            <dd class="mt-1 text-sm text-navy-950">{{ $membership->alumni->user->last_login_at?->format('M j, Y g:ia') ?? 'Never' }}</dd>
-                        </div>
                     @endif
                 </dl>
 
@@ -274,16 +270,16 @@
                 @if ($summary && !$summary['waived'])
                     <dl class="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-3">
                         <div>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Expected (Current Fee)</dt>
+                            <dd class="mt-1 font-serif text-2xl font-semibold text-navy-950">৳{{ number_format($summary['expected']) }}</dd>
+                        </div>
+                        <div>
                             <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Total Collected</dt>
                             <dd class="mt-1 font-serif text-2xl font-semibold text-emerald-700">৳{{ number_format($summary['collected']) }}</dd>
                         </div>
                         <div>
                             <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Outstanding</dt>
                             <dd class="mt-1 font-serif text-2xl font-semibold {{ $summary['outstanding'] > 0 ? 'text-maroon-700' : 'text-navy-950' }}">৳{{ number_format($summary['outstanding']) }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Payment Count</dt>
-                            <dd class="mt-1 font-serif text-2xl font-semibold text-navy-950">{{ number_format($paymentCount) }}</dd>
                         </div>
                     </dl>
                     @if ($summary['overpaid'] > 0)

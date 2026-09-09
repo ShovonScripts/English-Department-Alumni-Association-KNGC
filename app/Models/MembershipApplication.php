@@ -30,6 +30,8 @@ class MembershipApplication extends Model
         'current_designation',
         'city',
         'country',
+        'address',
+        'date_of_birth',
         'application_message',
         'alumni_document_path',
         'alumni_document_original_name',

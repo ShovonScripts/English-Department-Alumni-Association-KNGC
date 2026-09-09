@@ -19,8 +19,8 @@ class EventController extends Controller
             ->upcoming()
             ->with('category')
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('venue', 'like', "%{$search}%");
+                $query->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('venue', 'like', "%" . $this->escapeLike($search) . "%");
             }))
             ->when($categoryId, fn ($query, $categoryId) => $query->where('category_id', $categoryId))
             ->when($timing === 'past', fn ($query) => $query->whereRaw('1 = 0'))
@@ -32,8 +32,8 @@ class EventController extends Controller
             ->past()
             ->with('category')
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('venue', 'like', "%{$search}%");
+                $query->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('venue', 'like', "%" . $this->escapeLike($search) . "%");
             }))
             ->when($categoryId, fn ($query, $categoryId) => $query->where('category_id', $categoryId))
             ->when($timing === 'upcoming', fn ($query) => $query->whereRaw('1 = 0'))

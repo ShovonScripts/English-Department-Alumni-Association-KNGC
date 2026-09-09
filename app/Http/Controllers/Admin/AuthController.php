@@ -48,6 +48,8 @@ class AuthController extends Controller
         // Ensure only admin users can access the admin portal.
         if (! auth()->user()->isAdmin()) {
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
             throw ValidationException::withMessages([
                 'email' => ['Invalid email or password.'],

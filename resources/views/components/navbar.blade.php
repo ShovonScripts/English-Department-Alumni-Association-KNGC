@@ -106,8 +106,7 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
 @endphp
 
 <header
-    x-data="{ mobileOpen: false, openDropdown: null, profileMenuOpen: false }"
-    @keydown.escape.window="openDropdown = null; mobileOpen = false; profileMenuOpen = false"
+    id="main-header"
     class="sticky top-0 z-50 border-b border-gold-500/20 bg-navy-950/90 text-white shadow-xl backdrop-blur-md">
     
     {{-- Announcement Bar --}}
@@ -182,32 +181,22 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
             $routeName = request()->route()?->getName();
             $isDropdownActive = $routeName && in_array($routeName, array_column($dropdown['items'], 'route'));
             @endphp
-            <li role="none" class="relative" x-data="{ open: false }" @mouseenter="open = true; openDropdown = '{{ $dropdown['label'] }}'" @mouseleave="open = false">
+            <li role="none" class="relative desktop-dropdown" data-dropdown="{{ $dropdown['label'] }}">
                 <button
                     type="button"
                     role="menuitem"
                     aria-haspopup="true"
-                    :aria-expanded="open.toString()"
-                    @click="open = !open; openDropdown = open ? '{{ $dropdown['label'] }}' : null"
+                    aria-expanded="false"
                     class="focus-ring inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/5 hover:text-gold-300 {{ $isDropdownActive ? 'text-gold-300 font-semibold' : 'text-navy-100' }}">
                     {{ $dropdown['label'] }}
-                    <svg class="h-3.5 w-3.5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <svg class="h-3.5 w-3.5 dropdown-chevron transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
 
                 {{-- Dropdown panel --}}
                 <div
-                    x-show="open"
-                    x-cloak
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                    x-transition:leave="transition ease-in duration-150"
-                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                    @click="open = false; openDropdown = null"
-                    class="absolute left-0 top-full z-50 mt-1.5 w-72 overflow-hidden rounded-2xl border border-white/15 bg-navy-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-2xl"
+                    class="dropdown-panel absolute left-0 top-full z-50 mt-1.5 w-72 overflow-hidden rounded-2xl border border-white/15 bg-navy-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-2xl opacity-0 invisible translate-y-2 scale-95 transition-all duration-200"
                     role="menu"
                     aria-label="{{ $dropdown['label'] }} submenu">
                     
@@ -245,7 +234,7 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
                         href="{{ route('admin.dashboard') }}"
                         class="focus-ring hidden sm:inline-flex items-center gap-2 rounded-lg border border-gold-500/40 bg-gold-500/10 px-3 py-1.5 text-xs font-semibold text-gold-300 transition-all hover:bg-gold-500/20 hover:text-white">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.311-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.311 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         Admin Panel
@@ -253,12 +242,13 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
                 @endif
 
                 {{-- User / Member Dropdown --}}
-                <div class="relative" x-data="{ userMenu: false }">
+                <div class="relative" id="user-menu-container">
                     <button
                         type="button"
-                        @click="userMenu = !userMenu"
-                        @click.outside="userMenu = false"
-                        class="focus-ring flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 py-1 pl-1.5 pr-3 text-left transition-all hover:border-gold-500/40 hover:bg-white/10">
+                        id="user-menu-button"
+                        class="focus-ring flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 py-1 pl-1.5 pr-3 text-left transition-all hover:border-gold-500/40 hover:bg-white/10"
+                        aria-expanded="false"
+                        aria-haspopup="true">
                         @if ($currentAlumni?->profile_photo_url)
                             <img src="{{ $currentAlumni->profile_photo_url }}" alt="{{ $currentUser->name }}" class="h-8 w-8 rounded-full object-cover ring-1 ring-gold-400">
                         @else
@@ -274,22 +264,15 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
                                 {{ $isAdmin ? 'Administrator' : ($currentAlumni?->membership?->tier?->name ?? 'Member') }}
                             </span>
                         </div>
-                        <svg class="h-3.5 w-3.5 text-white/70 transition-transform duration-200" :class="userMenu ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <svg class="h-3.5 w-3.5 text-white/70 transition-transform duration-200 user-menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
                     {{-- User Dropdown Menu --}}
                     <div
-                        x-show="userMenu"
-                        x-cloak
-                        x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0 scale-95 translate-y-1"
-                        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-100"
-                        x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-                        class="absolute right-0 mt-2 w-64 rounded-2xl border border-white/15 bg-navy-900/95 p-2 shadow-2xl backdrop-blur-2xl z-50">
+                        id="user-menu-panel"
+                        class="user-menu-panel absolute right-0 mt-2 w-64 rounded-2xl border border-white/15 bg-navy-900/95 p-2 shadow-2xl backdrop-blur-2xl z-50 opacity-0 invisible translate-y-2 scale-95 transition-all duration-200">
                         
                         <div class="border-b border-white/10 px-3 py-2.5">
                             <p class="text-sm font-semibold text-white truncate">{{ $currentUser->name }}</p>
@@ -373,15 +356,15 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
             {{-- Mobile menu button --}}
             <button
                 type="button"
+                id="mobile-menu-button"
                 class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/10 xl:hidden"
-                @click="mobileOpen = !mobileOpen; openDropdown = null"
-                :aria-expanded="mobileOpen.toString()"
+                aria-expanded="false"
                 aria-controls="mobile-menu"
                 aria-label="Toggle navigation menu">
-                <svg x-show="!mobileOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <svg id="mobile-menu-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <svg x-show="mobileOpen" x-cloak class="h-5 w-5 text-gold-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <svg id="mobile-menu-icon-close" class="h-5 w-5 text-gold-300 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -390,16 +373,8 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
 
     {{-- Mobile Menu --}}
     <div
-        x-cloak
-        x-show="mobileOpen"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 -translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-2"
         id="mobile-menu"
-        class="border-t border-white/10 bg-navy-950/95 backdrop-blur-2xl xl:hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
+        class="mobile-menu border-t border-white/10 bg-navy-950/95 backdrop-blur-2xl xl:hidden max-h-[calc(100vh-5rem)] overflow-y-auto hidden">
         
         <nav class="container-page py-4 space-y-4" aria-label="Mobile">
             {{-- Member/Guest Header in Mobile --}}
@@ -452,8 +427,7 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
                     <a
                         href="{{ route($item['route']) }}"
                         role="menuitem"
-                        @click="mobileOpen = false"
-                        class="focus-ring flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5 {{ $active ? 'bg-gold-500/10 text-gold-300' : 'text-white' }}"
+                        class="mobile-link focus-ring flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5 {{ $active ? 'bg-gold-500/10 text-gold-300' : 'text-white' }}"
                         @if ($active) aria-current="page" @endif>
                         {{ $item['label'] }}
                         @if ($active)
@@ -469,39 +443,28 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
                 $routeName = request()->route()?->getName();
                 $isDropdownActive = $routeName && in_array($routeName, array_column($dropdown['items'], 'route'));
                 @endphp
-                <li role="none" x-data="{ open: {{ $isDropdownActive ? 'true' : 'false' }} }">
+                <li role="none" class="mobile-dropdown" data-dropdown="{{ $dropdown['label'] }}">
                     <button
                         type="button"
                         role="menuitem"
                         aria-haspopup="true"
-                        :aria-expanded="open.toString()"
-                        @click="open = !open"
-                        class="focus-ring flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5 {{ $isDropdownActive ? 'text-gold-300' : 'text-white' }}">
+                        aria-expanded="false"
+                        class="mobile-dropdown-toggle focus-ring flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5 {{ $isDropdownActive ? 'text-gold-300' : 'text-white' }}">
                         {{ $dropdown['label'] }}
                         <svg
-                            class="h-4 w-4 transition-transform duration-200"
-                            :class="open ? 'rotate-180 text-gold-300' : 'text-white/60'"
+                            class="h-4 w-4 transition-transform duration-200 mobile-dropdown-chevron"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
                     <div
-                        x-show="open"
-                        x-cloak
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-1"
-                        class="ml-3 mt-1 space-y-1 border-l-2 border-gold-500/30 pl-3">
+                        class="mobile-dropdown-panel ml-3 mt-1 space-y-1 border-l-2 border-gold-500/30 pl-3 hidden">
                         @foreach ($dropdown['items'] as $item)
                         @php $active = request()->routeIs($item['route']); @endphp
                         <a
                             href="{{ route($item['route']) }}"
                             role="menuitem"
-                            @click="mobileOpen = false"
-                            class="focus-ring flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-white/5 {{ $active ? 'text-gold-300 font-semibold' : 'text-navy-200' }}"
+                            class="mobile-link focus-ring flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-white/5 {{ $active ? 'text-gold-300 font-semibold' : 'text-navy-200' }}"
                             @if ($active) aria-current="page" @endif>
                             <span>{{ $item['label'] }}</span>
                             @if ($active)
@@ -515,4 +478,199 @@ $isAdmin = $currentUser && $currentUser->isAdmin();
             </ul>
         </nav>
     </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        const header = document.getElementById('main-header');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuIconOpen = document.getElementById('mobile-menu-icon-open');
+        const mobileMenuIconClose = document.getElementById('mobile-menu-icon-close');
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenuPanel = document.getElementById('user-menu-panel');
+
+        let mobileOpen = false;
+        let userMenuOpen = false;
+        let activeDesktopDropdown = null;
+        let hoverTimeout = null;
+
+        function closeMobileMenu() {
+            mobileOpen = false;
+            mobileMenu.classList.add('hidden');
+            mobileMenuIconOpen.classList.remove('hidden');
+            mobileMenuIconClose.classList.add('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', 'false');
+            document.querySelectorAll('.mobile-dropdown-panel').forEach(function(el) {
+                el.classList.add('hidden');
+            });
+            document.querySelectorAll('.mobile-dropdown-chevron').forEach(function(el) {
+                el.style.transform = '';
+            });
+        }
+
+        function openMobileMenu() {
+            mobileOpen = true;
+            mobileMenu.classList.remove('hidden');
+            mobileMenuIconOpen.classList.add('hidden');
+            mobileMenuIconClose.classList.remove('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeUserMenu() {
+            userMenuOpen = false;
+            userMenuPanel.classList.add('opacity-0', 'invisible', 'translate-y-2', 'scale-95');
+            userMenuPanel.classList.remove('opacity-100', 'visible', 'translate-y-0', 'scale-100');
+            userMenuButton.setAttribute('aria-expanded', 'false');
+            userMenuButton.querySelector('.user-menu-chevron').style.transform = '';
+        }
+
+        function openUserMenu() {
+            userMenuOpen = true;
+            userMenuPanel.classList.remove('opacity-0', 'invisible', 'translate-y-2', 'scale-95');
+            userMenuPanel.classList.add('opacity-100', 'visible', 'translate-y-0', 'scale-100');
+            userMenuButton.setAttribute('aria-expanded', 'true');
+            userMenuButton.querySelector('.user-menu-chevron').style.transform = 'rotate(180deg)';
+        }
+
+        function closeDesktopDropdowns() {
+            document.querySelectorAll('.desktop-dropdown').forEach(function(dropdown) {
+                const panel = dropdown.querySelector('.dropdown-panel');
+                const chevron = dropdown.querySelector('.dropdown-chevron');
+                if (panel) {
+                    panel.classList.add('opacity-0', 'invisible', 'translate-y-2', 'scale-95');
+                    panel.classList.remove('opacity-100', 'visible', 'translate-y-0', 'scale-100');
+                }
+                if (chevron) {
+                    chevron.style.transform = '';
+                }
+            });
+            activeDesktopDropdown = null;
+        }
+
+        function openDesktopDropdown(dropdown) {
+            closeDesktopDropdowns();
+            activeDesktopDropdown = dropdown;
+            const panel = dropdown.querySelector('.dropdown-panel');
+            const chevron = dropdown.querySelector('.dropdown-chevron');
+            if (panel) {
+                panel.classList.remove('opacity-0', 'invisible', 'translate-y-2', 'scale-95');
+                panel.classList.add('opacity-100', 'visible', 'translate-y-0', 'scale-100');
+            }
+            if (chevron) {
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function closeAll() {
+            closeMobileMenu();
+            closeUserMenu();
+            closeDesktopDropdowns();
+        }
+
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', function() {
+                if (mobileOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            });
+        }
+
+        if (userMenuButton) {
+            userMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (userMenuOpen) {
+                    closeUserMenu();
+                } else {
+                    openUserMenu();
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (userMenuOpen && userMenuPanel && !userMenuPanel.contains(e.target) && e.target !== userMenuButton) {
+                closeUserMenu();
+            }
+        });
+
+        document.querySelectorAll('.desktop-dropdown').forEach(function(dropdown) {
+            const button = dropdown.querySelector('button');
+            
+            dropdown.addEventListener('mouseenter', function() {
+                clearTimeout(hoverTimeout);
+                openDesktopDropdown(dropdown);
+            });
+
+            dropdown.addEventListener('mouseleave', function() {
+                hoverTimeout = setTimeout(function() {
+                    closeDesktopDropdowns();
+                }, 150);
+            });
+
+            if (button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (activeDesktopDropdown === dropdown) {
+                        closeDesktopDropdowns();
+                    } else {
+                        openDesktopDropdown(dropdown);
+                    }
+                });
+            }
+
+            const panel = dropdown.querySelector('.dropdown-panel');
+            if (panel) {
+                panel.addEventListener('click', function(e) {
+                    if (e.target.closest('a')) {
+                        closeDesktopDropdowns();
+                    }
+                });
+            }
+        });
+
+        document.querySelectorAll('.mobile-dropdown-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function() {
+                const dropdown = toggle.closest('.mobile-dropdown');
+                const panel = dropdown.querySelector('.mobile-dropdown-panel');
+                const chevron = toggle.querySelector('.mobile-dropdown-chevron');
+                const isHidden = panel.classList.contains('hidden');
+
+                document.querySelectorAll('.mobile-dropdown-panel').forEach(function(el) {
+                    el.classList.add('hidden');
+                });
+                document.querySelectorAll('.mobile-dropdown-chevron').forEach(function(el) {
+                    el.style.transform = '';
+                });
+
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.mobile-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                closeMobileMenu();
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAll();
+            }
+        });
+
+        if (userMenuPanel) {
+            userMenuPanel.addEventListener('click', function(e) {
+                if (e.target.closest('a') || e.target.closest('form')) {
+                    setTimeout(closeUserMenu, 50);
+                }
+            });
+        }
+    })();
+    </script>
 </header>

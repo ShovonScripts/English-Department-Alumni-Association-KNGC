@@ -14,8 +14,8 @@ class PressReleasePublicController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('excerpt', 'like', "%{$search}%");
+                $q->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('excerpt', 'like', "%" . $this->escapeLike($search) . "%");
             });
         }
 

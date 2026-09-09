@@ -70,6 +70,16 @@
                         </form>
                     </details>
                 @endunless
+
+                <details class="mt-4 pt-6">
+                    <summary class="focus-ring cursor-pointer rounded text-sm font-semibold text-maroon-700 hover:text-maroon-900">Delete this expense permanently…</summary>
+                    <form method="POST" action="{{ route('admin.expenses.destroy', $expense) }}" class="mt-4 max-w-xl" onsubmit="return confirm('PERMANENTLY DELETE {{ $expense->expense_number }}? This cannot be undone.');">
+                        @csrf
+                        @method('DELETE')
+                        <p class="mb-3 text-xs text-maroon-700">This will permanently remove the expense record from the database. Consider voiding instead for audit trail purposes.</p>
+                        <x-button type="submit" variant="maroon" size="sm">Delete Permanently</x-button>
+                    </form>
+                </details>
             </section>
         </div>
 

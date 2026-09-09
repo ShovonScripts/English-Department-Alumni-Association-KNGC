@@ -18,9 +18,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
         'alumni_id',
-        'status',
     ];
 
     protected $hidden = [
@@ -34,7 +32,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'verified_at' => 'datetime',
-            'last_login_at' => 'datetime',
         ];
     }
 
@@ -66,6 +63,11 @@ class User extends Authenticatable
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    public function verifiedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     public function isDisabled(): bool

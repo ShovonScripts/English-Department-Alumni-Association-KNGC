@@ -56,7 +56,7 @@
                         <h3 class="mb-4 px-3 font-serif text-sm font-semibold uppercase tracking-wider text-navy-500">All Committees</h3>
                         <nav class="space-y-1">
                             @foreach ($allCommittees as $c)
-                                <a href="{{ route('committees.show', $c) }}"
+                                <a href="{{ route('committees.show', [$c->type, $c]) }}"
                                    class="committee-item flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-all {{ $committee->id === $c->id ? 'active' : '' }}">
                                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $c->is_current ? 'bg-gold-500/15 text-gold-600' : 'bg-navy-100 text-navy-500' }}">
                                         @if ($c->is_current)

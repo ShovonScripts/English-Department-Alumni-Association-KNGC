@@ -73,7 +73,7 @@ class Event extends Model
         $suffix = 2;
 
         while (self::slugExists($slug, $ignoreId)) {
-            $slug = $base.'-'.$suffix++;
+            $slug = $base . '-' . $suffix++;
         }
 
         return $slug;
@@ -83,7 +83,7 @@ class Event extends Model
     {
         return static::query()
             ->where('slug', $slug)
-            ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+            ->when($ignoreId, fn($query) => $query->whereKeyNot($ignoreId))
             ->exists();
     }
 
@@ -104,7 +104,7 @@ class Event extends Model
 
     public function getCoverImageUrlAttribute(): ?string
     {
-        return $this->cover_image
+        return $this->cover_image && Storage::disk('public')->exists($this->cover_image)
             ? Storage::disk('public')->url($this->cover_image)
             : null;
     }

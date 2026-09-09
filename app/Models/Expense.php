@@ -25,9 +25,6 @@ class Expense extends Model
         'description',
         'reference',
         'recorded_by',
-        'voided_at',
-        'voided_by',
-        'void_reason',
     ];
 
     protected static function booted(): void
@@ -92,7 +89,7 @@ class Expense extends Model
 
     public function scopeRecorded(Builder $query): Builder
     {
-        return $this->scopeValid($query);
+        return static::scopeValid($query);
     }
 
     public function scopeVoid(Builder $query): Builder

@@ -80,18 +80,20 @@ class CommitteeController extends Controller
 
     public function typeDestroy(CommitteeType $committeeType)
     {
-        if ($committeeType->committees()->exists()) {
-            return redirect()
-                ->route('admin.committee-types.index')
-                ->with('error', "\"{$committeeType->name}\" has committees and cannot be deleted. Deactivate it instead.");
+        $label = $committeeType->name;
+
+        // Cascade delete: remove pivot records, then committees, then the type.
+        $committeeIds = $committeeType->committees()->pluck('committees.id');
+        if ($committeeIds->isNotEmpty()) {
+            DB::table('committee_pivot')->whereIn('committee_id', $committeeIds)->delete();
+            $committeeType->committees()->delete();
         }
 
-        $label = $committeeType->name;
         $committeeType->delete();
 
         return redirect()
             ->route('admin.committee-types.index')
-            ->with('status', "Committee type \"{$label}\" deleted.");
+            ->with('status', "Committee type \"{$label}\" and its committees have been deleted.");
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -105,7 +107,7 @@ class CommitteeController extends Controller
 
         $committees = Committee::query()
             ->with('type')
-            ->when($search !== '', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+            ->when($search !== '', fn ($q) => $q->where('name', 'like', "%" . $this->escapeLike($search) . "%"))
             ->when($typeId, fn ($q) => $q->where('committee_type_id', (int) $typeId))
             ->ordered()
             ->paginate(15)
@@ -185,6 +187,9 @@ class CommitteeController extends Controller
     public function destroy(Committee $committee)
     {
         $label = $committee->name;
+
+        // Remove pivot records first, then delete the committee.
+        DB::table('committee_pivot')->where('committee_id', $committee->id)->delete();
         $committee->delete();
 
         return redirect()
@@ -214,6 +219,10 @@ class CommitteeController extends Controller
             'membership_id' => ['required', 'integer', Rule::exists('memberships', 'id')],
             'committee_role_id' => ['required', 'integer', Rule::exists('committee_roles', 'id')],
         ]);
+
+        if ($committee->members()->where('membership_id', $validated['membership_id'])->exists()) {
+            return back()->withErrors(['membership_id' => 'This member is already on this committee.']);
+        }
 
         $committee->members()->attach($validated['membership_id'], [
             'committee_role_id' => $validated['committee_role_id'],

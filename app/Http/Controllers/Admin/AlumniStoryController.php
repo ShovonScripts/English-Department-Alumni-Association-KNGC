@@ -17,10 +17,10 @@ class AlumniStoryController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('author_name', 'like', "%{$search}%")
+                $q->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('author_name', 'like', "%" . $this->escapeLike($search) . "%")
                     ->orWhereHas('alumni', function ($q2) use ($search) {
-                        $q2->where('full_name', 'like', "%{$search}%");
+                        $q2->where('full_name', 'like', "%" . $this->escapeLike($search) . "%");
                     });
             });
         }

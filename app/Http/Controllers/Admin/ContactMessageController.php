@@ -14,10 +14,10 @@ class ContactMessageController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('subject', 'like', "%{$search}%")
-                    ->orWhere('message', 'like', "%{$search}%");
+                $q->where('name', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('email', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('subject', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('message', 'like', "%" . $this->escapeLike($search) . "%");
             });
         }
 

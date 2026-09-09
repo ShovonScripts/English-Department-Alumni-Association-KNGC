@@ -73,8 +73,8 @@ class CommitteeFeatureTest extends TestCase
         Committee::factory()->create(['committee_type_id' => $type->id]);
 
         $response = $this->actingAs($this->admin)->delete("/admin/committee-types/{$type->slug}");
-        $response->assertSessionHas('error');
-        $this->assertDatabaseHas('committee_types', ['id' => $type->id]);
+        $response->assertSessionHas('status');
+        $this->assertDatabaseMissing('committee_types', ['id' => $type->id]);
     }
 
     // ─── Committee CRUD ──────────────────────────────────────────

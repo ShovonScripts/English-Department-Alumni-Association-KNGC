@@ -141,7 +141,10 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('credits') }}" class="focus-ring rounded text-navy-200 transition-colors hover:text-gold-300">
+                    <a href="{{ route('credits') }}" class="focus-ring group inline-flex items-center gap-1.5 rounded text-gold-400 font-semibold transition-colors hover:text-gold-300">
+                        <svg class="h-3.5 w-3.5 text-gold-500 transition-transform duration-300 group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                        </svg>
                         Credits
                     </a>
                 </li>
@@ -180,17 +183,33 @@
 
     {{-- Bottom bar --}}
     <div class="border-t border-white/10">
-        <div class="container-page flex flex-col items-center justify-between gap-3 py-6 text-xs text-navy-300 sm:flex-row">
+        <style>
+            @keyframes footer-shine {
+                0% { background-position: -200% center; }
+                100% { background-position: 200% center; }
+            }
+            .footer-credit-shine {
+                background: linear-gradient(90deg, #c9a84c 0%, #f5e6a3 25%, #c9a84c 50%, #f5e6a3 75%, #c9a84c 100%);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: footer-shine 4s linear infinite;
+                filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.3));
+            }
+            .footer-credit-shine:hover {
+                filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.5));
+            }
+        </style>
+        <div class="container-page flex flex-col items-center justify-between gap-3 py-5 text-[11px] text-navy-300 sm:flex-row">
             <p>
                 &copy; {{ date('Y') }} {{ $site['name'] }}. All rights reserved.
             </p>
-            <ul class="flex items-center gap-5">
-                <li>
-                    <a href="https://facebook.com/shovon.5271" target="_blank" rel="noopener noreferrer" class="focus-ring rounded transition-colors hover:text-gold-300">
-                        Crafted by Shovon | 18-19
-                    </a>
-                </li>
-            </ul>
+            <p>
+                Crafted with care by
+                <a href="{{ route('credits') }}" target="_blank" class="footer-credit-shine focus-ring rounded font-semibold transition-all duration-300">Shovon</a>
+                <span class="text-navy-500">&middot; 18-19</span>
+            </p>
         </div>
     </div>
 </footer>

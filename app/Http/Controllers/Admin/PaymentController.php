@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
+use App\Models\FeePlan;
 use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Payment;
@@ -24,10 +25,10 @@ class PaymentController extends Controller
         $query = Payment::query()
             ->with(['membership.alumni', 'membership.type', 'recordedBy'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('payment_number', 'like', "%{$search}%")
-                    ->orWhere('reference', 'like', "%{$search}%")
-                    ->orWhereHas('membership.alumni', fn ($q) => $q->where('full_name', 'like', "%{$search}%"))
-                    ->orWhereHas('membership', fn ($q) => $q->where('membership_number', 'like', "%{$search}%"));
+                $query->where('payment_number', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('reference', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhereHas('membership.alumni', fn ($q) => $q->where('full_name', 'like', "%" . $this->escapeLike($search) . "%"))
+                    ->orWhereHas('membership', fn ($q) => $q->where('membership_number', 'like', "%" . $this->escapeLike($search) . "%"));
             }))
             ->when($status, fn ($query, $value) => $query->where('status', $value))
             ->when($typeId, fn ($query, $value) => $query->whereHas(
@@ -72,6 +73,7 @@ class PaymentController extends Controller
 
         return view('admin.payments.create', [
             'memberships' => $memberships,
+            'feePlans' => FeePlan::query()->get(),
             'statuses' => [PaymentStatus::Paid, PaymentStatus::Partial, PaymentStatus::Waived],
             'preselectedMembershipId' => $request->query('membership_id'),
         ]);
@@ -82,6 +84,13 @@ class PaymentController extends Controller
         $validated = $request->validate($this->rules());
 
         $membership = Membership::query()->findOrFail($validated['membership_id']);
+        $feePlan = FeePlan::query()->findOrFail($validated['fee_plan_id']);
+
+        if ($feePlan->membership_type_id !== $membership->membership_type_id) {
+            return back()->withErrors([
+                'fee_plan_id' => 'The selected fee plan does not match the membership type.',
+            ])->withInput();
+        }
 
         $payment = Payment::create([
             ...$validated,
@@ -100,8 +109,20 @@ class PaymentController extends Controller
     {
         $payment->load(['membership.alumni', 'membership.type', 'membership.tier', 'recordedBy']);
 
+        $feePlan = $payment->feePlan;
+        $collected = $payment->membership->payments()
+            ->whereIn('status', [PaymentStatus::Paid, PaymentStatus::Partial])
+            ->sum('amount');
+
+        $obligation = [
+            'expected' => $feePlan ? (float) $feePlan->amount : 0.0,
+            'collected' => (float) $collected,
+            'outstanding' => $feePlan ? max(0, (float) $feePlan->amount - (float) $collected) : 0.0,
+        ];
+
         return view('admin.payments.show', [
             'payment' => $payment,
+            'obligation' => $obligation,
         ]);
     }
 
@@ -129,6 +150,7 @@ class PaymentController extends Controller
         $validated = $request->validate($this->rules());
 
         unset($validated['membership_id']);
+        unset($validated['fee_plan_id']);
 
         $payment->update($validated);
 
@@ -163,10 +185,25 @@ class PaymentController extends Controller
             ->with('status', "Payment {$payment->payment_number} voided. The record is retained for audit purposes.");
     }
 
+    public function destroy(Payment $payment)
+    {
+        $paymentNumber = $payment->payment_number;
+        $membership = $payment->membership;
+
+        $payment->delete();
+
+        $membership->recalculateTier();
+
+        return redirect()
+            ->route('admin.payments.index')
+            ->with('status', "Payment {$paymentNumber} has been permanently deleted.");
+    }
+
     protected function rules(): array
     {
         return [
             'membership_id' => ['required', 'integer', Rule::exists('memberships', 'id')],
+            'fee_plan_id' => ['required', 'integer', Rule::exists('fee_plans', 'id')],
             'amount' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
             'status' => ['required', Rule::in([PaymentStatus::Paid->value, PaymentStatus::Partial->value, PaymentStatus::Waived->value])],
             'paid_at' => ['required', 'date', 'before_or_equal:today'],

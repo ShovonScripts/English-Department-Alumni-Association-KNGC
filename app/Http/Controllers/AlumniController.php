@@ -23,9 +23,9 @@ class AlumniController extends Controller
             ->where('status', Alumni::STATUS_ACTIVE)
             ->with(['publicMembership.type', 'publicMembership.tier'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('profession', 'like', "%{$search}%")
-                    ->orWhere('organization', 'like', "%{$search}%");
+                $query->where('full_name', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('profession', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('organization', 'like', "%" . $this->escapeLike($search) . "%");
             }))
             ->when($batch, fn ($query, $batch) => $query->where('batch', $batch))
             ->when($graduationYear, fn ($query, $year) => $query->where('graduation_year', $year))

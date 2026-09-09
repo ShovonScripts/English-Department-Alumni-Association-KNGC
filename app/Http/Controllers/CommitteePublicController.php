@@ -54,8 +54,12 @@ class CommitteePublicController extends Controller
     /**
      * Show a specific committee (for sidebar click navigation).
      */
-    public function show(Committee $committee)
+    public function show(CommitteeType $type, Committee $committee)
     {
+        if ($committee->committee_type_id !== $type->id) {
+            abort(404);
+        }
+
         $committee->load('type');
         $members = $committee->membersWithRoles();
 

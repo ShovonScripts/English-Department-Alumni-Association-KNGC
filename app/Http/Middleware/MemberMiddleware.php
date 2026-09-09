@@ -19,6 +19,16 @@ class MemberMiddleware
         /** @var User $user */
         $user = auth()->user();
 
+        if ($user->fresh()->isDisabled()) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('member.login')->withErrors([
+                'email' => 'Your account has been disabled. Please contact the administrator.',
+            ]);
+        }
+
         if (! $user->alumni_id || ! $user->alumni) {
             return redirect()->route('member.login')->with('error', 'Your account is not linked to a membership profile. Please contact administration.');
         }

@@ -71,6 +71,24 @@
                         <dd class="mt-1 text-sm text-navy-950">{{ $payment->membership?->tier?->badge_label ?? 'Not assigned' }}</dd>
                     </div>
                     <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Plan</dt>
+                        <dd class="mt-1 text-sm text-navy-950">{{ $payment->feePlan?->name ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Fee Amount</dt>
+                        <dd class="mt-1 text-sm text-navy-950">{{ $payment->feePlan ? '৳' . number_format($payment->feePlan->amount, 2) : '—' }}</dd>
+                    </div>
+                    @if ($obligation)
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Collected</dt>
+                            <dd class="mt-1 text-sm text-navy-950">৳{{ number_format($obligation['collected'], 2) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Outstanding</dt>
+                            <dd class="mt-1 text-sm text-navy-950">৳{{ number_format($obligation['outstanding'], 2) }}</dd>
+                        </div>
+                    @endif
+                    <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Payment Date</dt>
                         <dd class="mt-1 text-sm text-navy-950">{{ $payment->paid_at?->format('M j, Y') }}</dd>
                     </div>
@@ -127,6 +145,16 @@
                         </form>
                     </details>
                 @endunless
+
+                <details class="mt-4 pt-6">
+                    <summary class="focus-ring cursor-pointer rounded text-sm font-semibold text-maroon-700 hover:text-maroon-900">Delete this payment permanently…</summary>
+                    <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" class="mt-4 max-w-xl" onsubmit="return confirm('PERMANENTLY DELETE {{ $payment->payment_number }}? This cannot be undone.');">
+                        @csrf
+                        @method('DELETE')
+                        <p class="mb-3 text-xs text-maroon-700">This will permanently remove the payment record from the database. Consider voiding instead for audit trail purposes.</p>
+                        <x-button type="submit" variant="maroon" size="sm">Delete Permanently</x-button>
+                    </form>
+                </details>
             </section>
         </div>
     </div>

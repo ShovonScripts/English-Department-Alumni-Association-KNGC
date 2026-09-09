@@ -161,6 +161,26 @@
 <?php endif; ?>
             <?php if (isset($component)) { $__componentOriginal3c3cb599308b2d9971dae437d0b6bab6 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.stat-card','data' => ['label' => 'Public Members','value' => ''.e(number_format($publicMemberCount)).'','hint' => 'Visible in directory','href' => ''.e(route('admin.members.index')).'','icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.stat-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['label' => 'Public Members','value' => ''.e(number_format($publicMemberCount)).'','hint' => 'Visible in directory','href' => ''.e(route('admin.members.index')).'','icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6)): ?>
+<?php $attributes = $__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6; ?>
+<?php unset($__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal3c3cb599308b2d9971dae437d0b6bab6)): ?>
+<?php $component = $__componentOriginal3c3cb599308b2d9971dae437d0b6bab6; ?>
+<?php unset($__componentOriginal3c3cb599308b2d9971dae437d0b6bab6); ?>
+<?php endif; ?>
+            <?php if (isset($component)) { $__componentOriginal3c3cb599308b2d9971dae437d0b6bab6 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.stat-card','data' => ['label' => 'Pending Applications','value' => ''.e(number_format($applicationPendingCount)).'','hint' => ''.e(number_format($applicationUnderReviewCount)).' under active review','href' => ''.e(route('admin.membership-applications.index')).'','badge' => ''.e($applicationPendingCount > 0 ? 'Action' : null).'','accent' => ''.e($applicationPendingCount > 0).'','icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin.stat-card'); ?>
 <?php if ($component->shouldRender()): ?>
@@ -541,14 +561,14 @@
 <?php endif; ?>
             <?php if (isset($component)) { $__componentOriginal3c3cb599308b2d9971dae437d0b6bab6 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.stat-card','data' => ['label' => 'Photo Gallery','value' => ''.e(number_format($albumPublishedCount)).'','hint' => ''.e($photoCount).' total photos archived','href' => ''.e(route('admin.gallery.index')).'','icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.stat-card','data' => ['label' => 'Press Releases','value' => ''.e(number_format($pressReleasePublishedCount)).'','hint' => ''.e($pressReleaseDraftCount).' drafts','href' => ''.e(route('admin.press-releases.index')).'','icon' => 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('admin.stat-card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['label' => 'Photo Gallery','value' => ''.e(number_format($albumPublishedCount)).'','hint' => ''.e($photoCount).' total photos archived','href' => ''.e(route('admin.gallery.index')).'','icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z']); ?>
+<?php $component->withAttributes(['label' => 'Press Releases','value' => ''.e(number_format($pressReleasePublishedCount)).'','hint' => ''.e($pressReleaseDraftCount).' drafts','href' => ''.e(route('admin.press-releases.index')).'','icon' => 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal3c3cb599308b2d9971dae437d0b6bab6)): ?>

@@ -137,6 +137,7 @@ class MembershipApplicationController extends Controller
             'student_id' => ['nullable', 'string', 'max:50'],
             'batch' => ['nullable', 'string', 'max:30'],
             'graduation_year' => ['nullable', 'integer', 'min:1960', 'max:'.((int) date('Y') + 1)],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
             'current_organization' => ['nullable', 'string', 'max:150'],
             'profession' => ['nullable', 'string', 'max:100'],
             'current_designation' => ['nullable', 'string', 'max:100'],

@@ -222,7 +222,7 @@
 
                     {{-- Approve --}}
                     @if (in_array($application->status->value, ['pending', 'under_review']))
-                        <form method="POST" action="{{ route('admin.membership-applications.approve', $application) }}" class="mt-4" x-data x-confirm="Are you sure you want to approve this application? This will create a membership record.">
+                        <form method="POST" action="{{ route('admin.membership-applications.approve', $application) }}" class="mt-4" onsubmit="return confirm('Are you sure you want to approve this application? This will create a membership record.');">
                             @csrf
                             <div class="mb-3">
                                 <label for="approve_membership_type_id" class="mb-1 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Membership Type <span class="text-maroon-600">*</span></label>
@@ -256,27 +256,27 @@
                     @endif
 
                     {{-- Request Changes --}}
-                    <form method="POST" action="{{ route('admin.membership-applications.review', $application) }}" class="mt-3" x-data="{ showNotes: false }">
+                    <form method="POST" action="{{ route('admin.membership-applications.review', $application) }}" class="mt-3">
                         @csrf
                         <input type="hidden" name="status" value="changes_requested">
-                        <div x-show="showNotes" x-transition class="mb-3">
+                        <div id="notes-section" class="mb-3 hidden">
                             <label for="admin_notes_changes" class="mb-1 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Note to Applicant</label>
                             <textarea id="admin_notes_changes" name="admin_notes" rows="3" class="input-field" required placeholder="Describe what changes are needed…"></textarea>
                         </div>
-                        <button type="button" @click="showNotes = !showNotes" class="w-full focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-800 transition-colors hover:bg-amber-100">
+                        <button type="button" id="toggle-notes" class="w-full focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-800 transition-colors hover:bg-amber-100">
                             Request Changes
                         </button>
                     </form>
 
                     {{-- Reject --}}
-                    <form method="POST" action="{{ route('admin.membership-applications.review', $application) }}" class="mt-3" x-data="{ showReason: false }">
+                    <form method="POST" action="{{ route('admin.membership-applications.review', $application) }}" class="mt-3">
                         @csrf
                         <input type="hidden" name="status" value="rejected">
-                        <div x-show="showReason" x-transition class="mb-3">
+                        <div id="reason-section" class="mb-3 hidden">
                             <label for="rejection_reason" class="mb-1 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Rejection Reason</label>
                             <textarea id="rejection_reason" name="rejection_reason" rows="3" class="input-field" required placeholder="Provide a reason for rejection…"></textarea>
                         </div>
-                        <button type="button" @click="showReason = !showReason" class="w-full focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-maroon-200 bg-maroon-50 px-4 py-2.5 text-sm font-semibold text-maroon-700 transition-colors hover:bg-maroon-100">
+                        <button type="button" id="toggle-reason" class="w-full focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-maroon-200 bg-maroon-50 px-4 py-2.5 text-sm font-semibold text-maroon-700 transition-colors hover:bg-maroon-100">
                             Reject Application
                         </button>
                     </form>
@@ -298,3 +298,30 @@
         </div>
     </div>
 </x-layouts.admin>
+
+@push('scripts')
+    <script>
+    (function() {
+        const toggleNotes = document.getElementById('toggle-notes');
+        const notesSection = document.getElementById('notes-section');
+        const toggleReason = document.getElementById('toggle-reason');
+        const reasonSection = document.getElementById('reason-section');
+
+        if (toggleNotes && notesSection) {
+            toggleNotes.addEventListener('click', function() {
+                const isHidden = notesSection.classList.contains('hidden');
+                notesSection.classList.toggle('hidden', !isHidden);
+                toggleNotes.textContent = isHidden ? 'Hide Notes' : 'Request Changes';
+            });
+        }
+
+        if (toggleReason && reasonSection) {
+            toggleReason.addEventListener('click', function() {
+                const isHidden = reasonSection.classList.contains('hidden');
+                reasonSection.classList.toggle('hidden', !isHidden);
+                toggleReason.textContent = isHidden ? 'Hide Reason' : 'Reject Application';
+            });
+        }
+    })();
+    </script>
+@endpush

@@ -124,6 +124,13 @@
                 icon="M12 4.35a2.65 2.65 0 110 5.3 2.65 2.65 0 010-5.3zM5 21v-1.6A5.4 5.4 0 0110.4 14h3.2A5.4 5.4 0 0119 19.4V21m2-9.5l1.6 1.6M21 5.5L19.4 7M3 11.5L4.6 13.1M5 5.5L6.6 7.1"
             />
             <x-admin.stat-card
+                label="Public Members"
+                value="{{ number_format($publicMemberCount) }}"
+                hint="Visible in directory"
+                href="{{ route('admin.members.index') }}"
+                icon="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+            <x-admin.stat-card
                 label="Pending Applications"
                 value="{{ number_format($applicationPendingCount) }}"
                 hint="{{ number_format($applicationUnderReviewCount) }} under active review"
@@ -398,11 +405,11 @@
                 icon="M9.6 4C5.4 5.4 3 8.6 3 13.2V20h6.8v-6.8H6.4c0-2.8 1.4-4.9 4.2-5.8L9.6 4zm11 0c-4.2 1.4-6.6 4.6-6.6 9.2V20h6.8v-6.8h-3.4c0-2.8 1.4-4.9 4.2-5.8L20.6 4z"
             />
             <x-admin.stat-card
-                label="Photo Gallery"
-                value="{{ number_format($albumPublishedCount) }}"
-                hint="{{ $photoCount }} total photos archived"
-                href="{{ route('admin.gallery.index') }}"
-                icon="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                label="Press Releases"
+                value="{{ number_format($pressReleasePublishedCount) }}"
+                hint="{{ $pressReleaseDraftCount }} drafts"
+                href="{{ route('admin.press-releases.index') }}"
+                icon="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
             />
             <x-admin.stat-card
                 label="Publications"

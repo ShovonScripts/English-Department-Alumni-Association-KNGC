@@ -25,11 +25,11 @@ class MembershipApplicationController extends Controller
         // Search.
         if ($search = $request->input('q')) {
             $query->where(function ($q) use ($search) {
-                $q->where('application_number', 'like', "%{$search}%")
-                    ->orWhere('full_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('student_id', 'like', "%{$search}%");
+                $q->where('application_number', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('full_name', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('email', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('phone', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('student_id', 'like', "%" . $this->escapeLike($search) . "%");
             });
         }
 
@@ -171,8 +171,9 @@ class MembershipApplicationController extends Controller
             return back()->with('success', 'Application approved. Membership '.$membershipNumber.' has been created for '.$alumni->full_name.'.');
         } catch (\Exception $e) {
             DB::rollBack();
+            report($e);
 
-            return back()->withErrors(['status' => 'Approval failed: '.$e->getMessage()]);
+            return back()->withErrors(['status' => 'Approval failed due to an internal error. Please try again.']);
         }
     }
 

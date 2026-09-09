@@ -150,6 +150,7 @@ class EventTest extends TestCase
     public function test_public_event_json_ld_contains_url_and_absolute_image(): void
     {
         Storage::fake('public');
+        Storage::disk('public')->put('events/cover.jpg', 'image');
         $event = Event::factory()->published()->create([
             'title' => 'Schema Event',
             'cover_image' => 'events/cover.jpg',
@@ -385,6 +386,9 @@ class EventTest extends TestCase
             'status' => 'draft',
             'cover_image' => UploadedFile::fake()->image('new-event.jpg', 800, 600),
         ]);
+        $event->refresh();
+        $this->assertNotNull($event->cover_image);
+        Storage::disk('public')->assertExists($event->cover_image);
         Storage::disk('public')->assertMissing('events/old-image.jpg');
     }
 

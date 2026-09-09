@@ -54,10 +54,9 @@
     <p class="mt-1 text-sm text-ink-soft">A press release may contain text, an image, a PDF, or any combination. All are optional.</p>
 
     <div class="mt-6 grid gap-6 sm:grid-cols-2">
-        <div x-data="{ preview: @js($pressRelease?->cover_image_url), updatePreview(event) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => preview = e.target.result; reader.readAsDataURL(file); } else { preview = null; } } }">
+        <div>
             <label for="cover_image" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Cover Image</label>
             <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp"
-                @change="updatePreview"
                 class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800">
             <p class="mt-2 text-xs text-ink-soft">JPEG, PNG, or WebP. Max 8 MB, 5000×5000 px.</p>
             @error('cover_image')
@@ -65,12 +64,8 @@
             @enderror
 
             <div class="mt-3">
-                <template x-if="preview">
-                    <img :src="preview" alt="Preview" class="h-24 w-40 rounded-lg object-cover ring-4 ring-gold-500/30">
-                </template>
-                <template x-if="!preview">
-                    <span class="text-xs text-ink-soft">No image selected</span>
-                </template>
+                <img id="preview-img" src="{{ $pressRelease?->cover_image_url ?? '' }}" alt="Preview" class="h-24 w-40 rounded-lg object-cover ring-4 ring-gold-500/30 {{ $pressRelease?->cover_image_url ? '' : 'hidden' }}">
+                <span id="preview-fallback" class="text-xs text-ink-soft {{ $pressRelease?->cover_image_url ? 'hidden' : '' }}">No image selected</span>
             </div>
 
             @if ($pressRelease?->cover_image)
@@ -150,3 +145,27 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+    <script>
+    (function() {
+        const input = document.getElementById('cover_image');
+        const img = document.getElementById('preview-img');
+        const fallback = document.getElementById('preview-fallback');
+        if (input && img) {
+            input.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        img.classList.remove('hidden');
+                        if (fallback) fallback.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    })();
+    </script>
+@endpush

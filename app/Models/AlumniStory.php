@@ -44,7 +44,7 @@ class AlumniStory extends Model
     {
         $slug = Str::slug($title);
         $original = $slug;
-        $n = 1;
+        $n = 2;
 
         while (static::slugExists($slug, $ignoreId)) {
             $slug = $original.'-'.$n++;

@@ -47,9 +47,12 @@ class AdminController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+        ]);
+
+        $user->forceFill([
             'is_admin' => true,
             'status' => 'active',
-        ]);
+        ])->save();
 
         ActivityLog::log('admin_created', "Created admin user: {$user->name}", $user);
 
@@ -102,9 +105,10 @@ class AdminController extends Controller
         $admin->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'status' => $validated['status'],
             'password' => $validated['password'] ? Hash::make($validated['password']) : $admin->password,
         ]);
+
+        $admin->forceFill(['status' => $validated['status']])->save();
 
         ActivityLog::log('admin_updated', "Updated admin user: {$admin->name}", $admin);
 

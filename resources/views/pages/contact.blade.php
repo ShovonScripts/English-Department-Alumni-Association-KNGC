@@ -66,7 +66,7 @@
             {{-- Form --}}
             <div class="lg:col-span-3">
                 @if (session('success'))
-                    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)" x-transition class="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-5 text-green-800" role="alert">
+                    <div id="contact-success-alert" class="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-5 text-green-800" role="alert">
                         <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -74,7 +74,16 @@
                             <p class="font-semibold">Message sent</p>
                             <p class="mt-1 text-sm">{{ session('success') }}</p>
                         </div>
+                        <button type="button" onclick="document.getElementById('contact-success-alert').remove()" class="ml-auto p-1 text-green-600 hover:text-green-800 transition-colors">
+                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
                     </div>
+                    <script>
+                    setTimeout(function() {
+                        var el = document.getElementById('contact-success-alert');
+                        if (el) el.remove();
+                    }, 6000);
+                    </script>
                 @endif
 
                 <div class="rounded-xl border border-navy-100 bg-white p-8 shadow-sm sm:p-10">

@@ -233,6 +233,10 @@ class LeaderboardService
             $query->where('lb.batch', trim((string) $filters['batch']));
         }
 
+        if (! empty($filters['graduation_year'])) {
+            $query->where('lb.graduation_year', (int) $filters['graduation_year']);
+        }
+
         // Admin-only filters.
         $status = trim((string) ($filters['status'] ?? ''));
 

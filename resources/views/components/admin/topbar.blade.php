@@ -15,8 +15,8 @@
     <div class="flex items-center gap-3">
         <button
             type="button"
+            onclick="toggleSidebar()"
             class="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-xl text-navy-600 hover:bg-navy-50 hover:text-navy-950 transition lg:hidden"
-            @click="$dispatch('toggle-sidebar')"
             aria-label="Toggle navigation sidebar"
         >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -34,7 +34,7 @@
     <div class="hidden md:flex flex-1 max-w-md mx-4">
         <button
             type="button"
-            @click="$dispatch('open-command-palette')"
+            onclick="openCommandPalette()"
             class="flex w-full items-center justify-between rounded-xl bg-navy-50/70 hover:bg-navy-50 border border-navy-200/80 px-3.5 py-1.5 text-xs text-navy-500 transition-all duration-200 group hover:border-gold-400 hover:text-navy-800 shadow-inner"
             title="Press Ctrl+K or Cmd+K to search"
         >
@@ -56,7 +56,7 @@
         {{-- Mobile Search Trigger --}}
         <button
             type="button"
-            @click="$dispatch('open-command-palette')"
+            onclick="openCommandPalette()"
             class="flex h-9 w-9 items-center justify-center rounded-xl text-navy-600 hover:bg-navy-50 md:hidden"
             aria-label="Search"
         >
@@ -66,31 +66,24 @@
         </button>
 
         {{-- Quick Create Dropdown --}}
-        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+        <div class="relative admin-dropdown" data-open="false">
             <button
                 type="button"
-                @click="open = !open"
-                class="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-maroon-700 to-maroon-800 hover:from-maroon-800 hover:to-maroon-900 text-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-all duration-200 hover:shadow-md"
+                class="admin-dropdown-toggle focus-ring inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-maroon-700 to-maroon-800 hover:from-maroon-800 hover:to-maroon-900 text-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-all duration-200 hover:shadow-md"
+                aria-haspopup="true"
+                aria-expanded="false"
             >
                 <svg class="h-4 w-4 text-gold-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <span class="hidden sm:inline">Create</span>
-                <svg class="h-3 w-3 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="h-3 w-3 text-white/70 admin-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
             </button>
 
             <div
-                x-show="open"
-                x-transition:enter="transition ease-out duration-150"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100"
-                style="display: none;"
+                class="admin-dropdown-panel absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100 opacity-0 invisible translate-y-2 scale-95 transition-all duration-200"
             >
                 <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-navy-400">Quick Record</p>
                 <div class="space-y-0.5">
@@ -119,12 +112,13 @@
         </div>
 
         {{-- Notifications Bell Dropdown --}}
-        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+        <div class="relative admin-dropdown" data-open="false">
             <button
                 type="button"
-                @click="open = !open"
-                class="relative flex h-9 w-9 items-center justify-center rounded-xl text-navy-600 hover:bg-navy-50 hover:text-navy-900 transition"
+                class="admin-dropdown-toggle relative flex h-9 w-9 items-center justify-center rounded-xl text-navy-600 hover:bg-navy-50 hover:text-navy-900 transition"
                 aria-label="Pending notifications"
+                aria-haspopup="true"
+                aria-expanded="false"
             >
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -137,15 +131,7 @@
             </button>
 
             <div
-                x-show="open"
-                x-transition:enter="transition ease-out duration-150"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-80 origin-top-right rounded-2xl bg-white p-3 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100"
-                style="display: none;"
+                class="admin-dropdown-panel absolute right-0 mt-2 w-80 origin-top-right rounded-2xl bg-white p-3 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100 opacity-0 invisible translate-y-2 scale-95 transition-all duration-200"
             >
                 <div class="flex items-center justify-between pb-2 border-b border-navy-100 px-1">
                     <span class="font-serif text-sm font-bold text-navy-950">Action Items</span>
@@ -212,12 +198,13 @@
         <div class="h-6 w-px bg-navy-200"></div>
 
         {{-- User Profile Menu Dropdown --}}
-        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+        <div class="relative admin-dropdown" data-open="false">
             <button
                 type="button"
-                @click="open = !open"
-                class="flex items-center gap-2.5 rounded-xl p-1 hover:bg-navy-50 transition focus:outline-none"
+                class="admin-dropdown-toggle flex items-center gap-2.5 rounded-xl p-1 hover:bg-navy-50 transition focus:outline-none"
                 aria-label="User menu"
+                aria-haspopup="true"
+                aria-expanded="false"
             >
                 <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-maroon-700 to-navy-900 font-serif text-xs font-bold text-gold-300 ring-2 ring-gold-400/50 shadow-xs">
                     {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
@@ -226,21 +213,13 @@
                     <p class="text-xs font-bold text-navy-900 leading-tight">{{ Auth::user()->name }}</p>
                     <p class="text-[10px] font-medium text-navy-500">Administrator</p>
                 </div>
-                <svg class="hidden lg:block h-3.5 w-3.5 text-navy-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="hidden lg:block h-3.5 w-3.5 text-navy-400 admin-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
             </button>
 
             <div
-                x-show="open"
-                x-transition:enter="transition ease-out duration-150"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100"
-                style="display: none;"
+                class="admin-dropdown-panel absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 border border-navy-100 opacity-0 invisible translate-y-2 scale-95 transition-all duration-200"
             >
                 <div class="px-3 py-2 border-b border-navy-100 mb-1">
                     <p class="text-xs font-bold text-navy-950">{{ Auth::user()->name }}</p>
@@ -249,7 +228,7 @@
 
                 <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-navy-700 hover:bg-navy-50 hover:text-navy-950 transition">
                     <svg class="h-4 w-4 text-navy-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.311-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.311 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     <span>System Settings</span>
                 </a>

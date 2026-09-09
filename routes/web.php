@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PressReleaseController as AdminPressReleaseController;
 use App\Http\Controllers\Admin\PublicationCategoryController as AdminPublicationCategoryController;
 use App\Http\Controllers\Admin\PublicationController as AdminPublicationController;
+use App\Http\Controllers\Admin\SeoController as AdminSeoController;
 use App\Http\Controllers\Admin\SiteSettingsController as AdminSiteSettingsController;
 use App\Http\Controllers\Admin\AdminController as AdminAdminController;
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
@@ -79,7 +80,7 @@ Route::get('/leaderboard', [PublicLeaderboardController::class, 'index'])->name(
 Route::get('/finance', [PageController::class, 'finance'])->name('finance.public');
 Route::get('/committees', [CommitteePublicController::class, 'index'])->name('committees.index');
 Route::get('/committees/history/{type}', [CommitteePublicController::class, 'history'])->name('committees.history');
-Route::get('/committees/{committee}', [CommitteePublicController::class, 'show'])->name('committees.show');
+Route::get('/committees/{type}/{committee}', [CommitteePublicController::class, 'show'])->name('committees.show');
 Route::get('/publications', [PublicationPublicController::class, 'index'])->name('publications.index');
 Route::get('/publications/{publication}', [PublicationPublicController::class, 'show'])->name('publications.show');
 Route::get('/publications/{publication}/download', [PublicationPublicController::class, 'download'])->name('publications.download');
@@ -90,9 +91,34 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 Route::get('/credits', [PageController::class, 'credits'])->name('credits');
 
+// Public SEO files
+Route::get('/sitemap.xml', function () {
+    $disk = \Illuminate\Support\Facades\Storage::disk('public');
+    if ($disk->exists('sitemap.xml')) {
+        return response($disk->get('sitemap.xml'), 200, [
+            'Content-Type' => 'application/xml',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
+    }
+    return response('Not Found', 404);
+})->name('sitemap');
+
+Route::get('/robots.txt', function () {
+    $disk = \Illuminate\Support\Facades\Storage::disk('public');
+    if ($disk->exists('robots.txt')) {
+        return response($disk->get('robots.txt'), 200, [
+            'Content-Type' => 'text/plain',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    return response("User-agent: *\nAllow: /\n", 200, [
+        'Content-Type' => 'text/plain',
+    ]);
+})->name('robots');
+
 // Comments
-Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('auth');
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy')->middleware('auth');
 
 // Public membership application (Feature 17).
 Route::get('/membership', [PageController::class, 'membership'])->name('membership');
@@ -112,7 +138,7 @@ Route::get('/members/{slug}', [MemberDirectoryController::class, 'show'])->name(
 
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login')->middleware('guest');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store')->middleware('guest');
-Route::delete('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+Route::delete('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -199,10 +225,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->parameters(['membership-tiers' => 'membershipTier'])
         ->except(['show']);
 
-    // Manual fee collection records (Feature 13). No destructive delete
-    // route exists — payments are voided for audit safety.
-    Route::resource('payments', AdminPaymentController::class)
-        ->except(['destroy']);
+    // Manual fee collection records (Feature 13). Voiding is preferred
+    // for audit safety, but hard delete is available for admins.
+    Route::resource('payments', AdminPaymentController::class);
 
     Route::post('payments/{payment}/void', [AdminPaymentController::class, 'void'])
         ->name('payments.void');
@@ -222,10 +247,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->parameters(['expense-categories' => 'expenseCategory'])
         ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
-    // No destructive delete route exists — expenses are voided for
-    // audit safety, mirroring payments.
-    Route::resource('expenses', AdminExpenseController::class)
-        ->except(['destroy']);
+    // Expense records (Feature 15). Voiding is preferred for audit safety,
+    // but hard delete is available for admins.
+    Route::resource('expenses', AdminExpenseController::class);
 
     Route::post('expenses/{expense}/void', [AdminExpenseController::class, 'void'])
         ->name('expenses.void');
@@ -344,6 +368,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->name('correction-requests.approve');
     Route::post('correction-requests/{correctionRequest}/reject', [CorrectionRequestController::class, 'reject'])
         ->name('correction-requests.reject');
+
+    // SEO Manager
+    Route::get('seo', [AdminSeoController::class, 'index'])->name('seo.index');
+    Route::get('seo/settings', [AdminSeoController::class, 'settings'])->name('seo.settings');
+    Route::put('seo/settings', [AdminSeoController::class, 'updateSettings'])->name('seo.settings.update');
+    Route::get('seo/pages', [AdminSeoController::class, 'pages'])->name('seo.pages');
+    Route::get('seo/pages/{uri}/edit', [AdminSeoController::class, 'editPage'])->name('seo.pages.edit');
+    Route::put('seo/pages/{uri}', [AdminSeoController::class, 'updatePage'])->name('seo.pages.update');
+    Route::delete('seo/pages/{uri}', [AdminSeoController::class, 'resetPage'])->name('seo.pages.reset');
+    Route::get('seo/sitemap', [AdminSeoController::class, 'sitemap'])->name('seo.sitemap');
+    Route::post('seo/sitemap/generate', [AdminSeoController::class, 'generateSitemap'])->name('seo.sitemap.generate');
+    Route::get('seo/robots', [AdminSeoController::class, 'robots'])->name('seo.robots');
+    Route::put('seo/robots', [AdminSeoController::class, 'updateRobots'])->name('seo.robots.update');
+    Route::delete('seo/robots', [AdminSeoController::class, 'resetRobots'])->name('seo.robots.reset');
 });
 
 /*
@@ -364,7 +402,7 @@ Route::prefix('member')->name('member.')->middleware('guest')->group(function ()
     Route::post('/reset-password', [MemberAuthController::class, 'reset'])->name('password.update');
 });
 
-Route::delete('/member/logout', [MemberAuthController::class, 'logout'])->name('member.logout');
+Route::delete('/member/logout', [MemberAuthController::class, 'logout'])->name('member.logout')->middleware('auth');
 Route::get('/member/account-status', [MemberAuthController::class, 'accountStatus'])->name('member.account-status');
 
 /*

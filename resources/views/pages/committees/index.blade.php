@@ -64,6 +64,7 @@
     @endpush
 
     {{-- Hero Header --}}
+    @if ($selectedCommittee)
     <section class="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-maroon-950 py-16 sm:py-20 hero-pattern">
         <div class="absolute inset-0 bg-gradient-to-t from-navy-950/50 to-transparent"></div>
         <div class="relative container-page text-center">
@@ -95,6 +96,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <section class="section-pad bg-cream">
         <div class="container-page">
@@ -117,7 +119,7 @@
                             </h3>
                             <nav class="space-y-1.5">
                                 @foreach ($allCommittees as $committee)
-                                    <a href="{{ route('committees.show', $committee) }}"
+                                    <a href="{{ route('committees.show', [$committee->type, $committee]) }}"
                                        class="committee-item flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm transition-all {{ $selectedCommittee?->id === $committee->id ? 'active' : '' }}">
                                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $committee->is_current ? 'bg-gradient-to-br from-gold-500 to-gold-600 text-navy-950 shadow-md shadow-gold-500/20' : 'bg-navy-100 text-navy-500' }}">
                                             @if ($committee->is_current)

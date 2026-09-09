@@ -19,25 +19,19 @@
 
         <div class="sm:col-span-2">
             <label for="profile_photo" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Profile photo</label>
-            <div x-data="{ preview: @js($alumni?->profile_photo_url), updatePreview(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => this.preview = e.target.result; reader.readAsDataURL(file); } }">
-                <div class="flex items-center gap-4">
-                    <template x-if="preview">
-                        <img :src="preview" alt="" class="h-20 w-20 rounded-full object-cover ring-4 ring-gold-500/30">
-                    </template>
-                    <template x-if="!preview">
-                        <span class="flex h-20 w-20 items-center justify-center rounded-full bg-navy-900 font-serif text-lg font-semibold text-gold-300 ring-4 ring-gold-500/30" aria-hidden="true">
-                            {{ \Illuminate\Support\Str::initials(old('full_name', $alumni?->full_name ?? '')) }}
-                        </span>
-                    </template>
-                    <input
-                        type="file"
-                        id="profile_photo"
-                        name="profile_photo"
-                        accept="image/*"
-                        @change="updatePreview"
-                        class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800"
-                    >
-                </div>
+            <div class="flex items-center gap-4">
+                <img id="preview-img" src="{{ $alumni?->profile_photo_url ?? '' }}" alt="" class="h-20 w-20 rounded-full object-cover ring-4 ring-gold-500/30 {{ $alumni?->profile_photo_url ? '' : 'hidden' }}">
+                <span id="preview-fallback" class="flex h-20 w-20 items-center justify-center rounded-full bg-navy-900 font-serif text-lg font-semibold text-gold-300 ring-4 ring-gold-500/30 {{ $alumni?->profile_photo_url ? 'hidden' : '' }}" aria-hidden="true">
+                    {{ \Illuminate\Support\Str::initials(old('full_name', $alumni?->full_name ?? '')) }}
+                </span>
+                <input
+                    type="file"
+                    id="profile_photo"
+                    name="profile_photo"
+                    accept="image/*"
+                    class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800"
+                >
+            </div>
                 <p class="mt-2 text-xs text-ink-soft">JPEG, PNG or WebP, up to 8MB.</p>
                 @error('profile_photo')
                     <p class="mt-1.5 text-xs font-medium text-maroon-700">{{ $message }}</p>
@@ -230,3 +224,27 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+    <script>
+    (function() {
+        const input = document.getElementById('profile_photo');
+        const img = document.getElementById('preview-img');
+        const fallback = document.getElementById('preview-fallback');
+        if (input && img) {
+            input.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        img.classList.remove('hidden');
+                        if (fallback) fallback.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    })();
+    </script>
+@endpush

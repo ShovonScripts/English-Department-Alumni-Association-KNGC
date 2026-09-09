@@ -19,10 +19,6 @@ class CommentController extends Controller
             'body' => 'required|string|max:2000',
         ]);
 
-        if (! Auth::check()) {
-            return back()->with('error', 'You must be logged in to comment.');
-        }
-
         $commentableClass = $request->input('commentable_type');
         $commentable = $commentableClass::findOrFail($request->input('commentable_id'));
 
@@ -34,8 +30,12 @@ class CommentController extends Controller
             'is_approved' => true,
         ]);
 
-        // Redirect back to the referring page
+        // Redirect back to the referring page (validate it's a local URL)
         $url = $request->headers->get('referer', url('/'));
+        $parsed = parse_url($url);
+        if (! isset($parsed['host']) || $parsed['host'] !== request()->getHost()) {
+            $url = url('/');
+        }
         $commentCount = $commentable->comments()->approved()->count();
 
         return redirect($url . '#comments')->with('success', 'Comment posted! (' . $commentCount . ' comments)');
@@ -54,6 +54,10 @@ class CommentController extends Controller
         $comment->delete();
 
         $url = url()->previous();
+        $parsed = parse_url($url);
+        if (! isset($parsed['host']) || $parsed['host'] !== request()->getHost()) {
+            $url = url('/');
+        }
         $commentCount = $commentable->comments()->approved()->count();
 
         return redirect($url . '#comments')->with('success', 'Comment deleted. (' . $commentCount . ' comments)');

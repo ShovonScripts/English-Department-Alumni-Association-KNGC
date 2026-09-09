@@ -18,10 +18,10 @@ class PublicationController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('subtitle', 'like', "%{$search}%")
-                    ->orWhere('author', 'like', "%{$search}%")
-                    ->orWhere('publisher', 'like', "%{$search}%");
+                $q->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('subtitle', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('author', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('publisher', 'like', "%" . $this->escapeLike($search) . "%");
             });
         }
 

@@ -339,7 +339,7 @@ class AdminAuthTest extends TestCase
 
     public function test_unauthenticated_admin_committee_redirects_to_login(): void
     {
-        $this->get(route('admin.committee.index'))
+        $this->get(route('admin.committees.index'))
             ->assertRedirect(route('admin.login'));
     }
 
@@ -381,7 +381,7 @@ class AdminAuthTest extends TestCase
         $user = User::factory()->admin()->create();
 
         $this->actingAs($user)
-            ->get(route('admin.committee.index'))
+            ->get(route('admin.committees.index'))
             ->assertOk();
     }
 

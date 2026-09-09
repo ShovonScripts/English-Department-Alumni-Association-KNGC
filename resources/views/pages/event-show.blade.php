@@ -65,9 +65,9 @@
 
     @if ($event->cover_image)
         <section class="bg-white">
-            <div class="container-page pb-12">
-                <div class="overflow-hidden rounded-xl">
-                    <img src="{{ $event->cover_image_url }}" alt="{{ $event->title }}" class="h-72 w-full object-cover sm:h-96">
+            <div class="container-page pb-10">
+                <div class="overflow-hidden rounded-2xl">
+                    <img src="{{ $event->cover_image_url }}" alt="{{ $event->title }}" class="h-64 w-full object-cover sm:h-80 lg:h-96">
                 </div>
             </div>
         </section>
@@ -75,19 +75,49 @@
 
     <section class="section-pad bg-white">
         <div class="container-page">
-            <div class="grid gap-12 lg:grid-cols-3">
-                <div class="lg:col-span-2">
-                    <div class="max-w-none text-base leading-relaxed text-navy-950">
-                        {!! nl2br(e($event->description)) !!}
+            <div class="grid gap-10 lg:grid-cols-3">
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="rounded-2xl border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+                        <h2 class="font-serif text-xl font-semibold text-navy-950 mb-4">About This Event</h2>
+                        <div class="prose prose-navy max-w-none text-sm leading-relaxed text-navy-900">
+                            {!! nl2br(e($event->description)) !!}
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+                        <h2 class="font-serif text-xl font-semibold text-navy-950 mb-4">Location</h2>
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-900 text-white">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17.7 11.9l-6.8 6.9a2 2 0 01-2.8 0l-3-3a2 2 0 010-2.8l6.9-6.8M14.8 3.2L20.8 9.2m-2-2l-4.5 4.5a4 4 0 00-1 2.1l-.2 1.5a.5.5 0 00.6.6l1.5-.2a4 4 0 002.1-1l4.5-4.5a2 2 0 000-2.8l-2.5-2.5a2 2 0 00-2.8 0z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-navy-950">{{ $event->venue ?? 'Venue not specified' }}</p>
+                                @if ($event->address || $event->location)
+                                    <p class="mt-1 text-sm text-ink-soft">{{ collect([$event->address, $event->location])->filter()->implode(', ') }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+                        <h2 class="font-serif text-xl font-semibold text-navy-950 mb-4">Organizer</h2>
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-900 text-white">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-navy-950">{{ $event->organizer ?? 'English Department Alumni Association KNGC' }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <aside class="space-y-8">
-                    <div class="rounded-xl border border-navy-100 bg-cream p-6 shadow-sm">
-                        <h2 class="font-serif text-lg font-semibold text-navy-950">Event Details</h2>
-                        <dl class="mt-4 space-y-4 text-sm">
+                <aside class="space-y-6">
+                    <div class="rounded-2xl border border-navy-100 bg-cream p-6 shadow-sm">
+                        <h2 class="font-serif text-lg font-semibold text-navy-950 mb-5">Event Details</h2>
+                        <dl class="space-y-4 text-sm">
                             <div class="flex items-start gap-3">
-                                <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
+                                <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-white">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z" /></svg>
                                 </dt>
                                 <dd>
@@ -98,7 +128,7 @@
 
                             @if ($event->formatted_time)
                                 <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
+                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-white">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     </dt>
                                     <dd>
@@ -108,36 +138,9 @@
                                 </div>
                             @endif
 
-                            @if ($event->venue)
-                                <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17.7 11.9l-6.8 6.9a2 2 0 01-2.8 0l-3-3a2 2 0 010-2.8l6.9-6.8M14.8 3.2L20.8 9.2m-2-2l-4.5 4.5a4 4 0 00-1 2.1l-.2 1.5a.5.5 0 00.6.6l1.5-.2a4 4 0 002.1-1l4.5-4.5a2 2 0 000-2.8l-2.5-2.5a2 2 0 00-2.8 0z" /></svg>
-                                    </dt>
-                                    <dd>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Venue</span>
-                                        <p class="mt-1 font-medium text-navy-950">{{ $event->venue }}</p>
-                                        @if ($event->address || $event->location)
-                                            <p class="mt-0.5 text-sm text-ink-soft">{{ collect([$event->address, $event->location])->filter()->implode(', ') }}</p>
-                                        @endif
-                                    </dd>
-                                </div>
-                            @endif
-
-                            @if ($event->organizer)
-                                <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    </dt>
-                                    <dd>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Organizer</span>
-                                        <p class="mt-1 font-medium text-navy-950">{{ $event->organizer }}</p>
-                                    </dd>
-                                </div>
-                            @endif
-
                             @if ($event->capacity)
                                 <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
+                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-white">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                                     </dt>
                                     <dd>
@@ -149,7 +152,7 @@
 
                             @if ($event->registration_deadline)
                                 <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
+                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-white">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     </dt>
                                     <dd>
@@ -161,7 +164,7 @@
 
                             @if ($event->category)
                                 <div class="flex items-start gap-3">
-                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white">
+                                    <dt class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-white">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" /></svg>
                                     </dt>
                                     <dd>

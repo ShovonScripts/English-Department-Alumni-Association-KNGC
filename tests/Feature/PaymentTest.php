@@ -264,8 +264,9 @@ class PaymentTest extends TestCase
         $this->assertSame($this->admin->id, $payment->voided_by);
         $this->assertSame('Duplicate entry recorded in error.', $payment->void_reason);
 
-        // No destructive delete route exists for payments.
-        $this->assertFalse(in_array('admin.payments.destroy', array_keys(Route::getRoutes()->getRoutesByName()), true));
+        // Delete route exists — voiding is preferred for audit safety, but
+        // hard delete is available as an admin option.
+        $this->assertTrue(in_array('admin.payments.destroy', array_keys(Route::getRoutes()->getRoutesByName()), true));
     }
 
     public function test_void_requires_a_reason(): void

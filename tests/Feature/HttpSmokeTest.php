@@ -40,7 +40,7 @@ class HttpSmokeTest extends TestCase
 
     public function test_committee_index_returns_200(): void
     {
-        $this->get(route('committee.index'))->assertOk();
+        $this->get(route('committees.index'))->assertOk();
     }
 
     public function test_events_index_returns_200(): void
@@ -82,7 +82,7 @@ class HttpSmokeTest extends TestCase
 
     public function test_committee_nonexistent_slug_returns_404(): void
     {
-        $this->get(route('committee.show', 'nonexistent-slug-xyz'))->assertNotFound();
+        $this->get(route('committees.show', ['nonexistent-type', 'nonexistent-slug-xyz']))->assertNotFound();
     }
 
     public function test_events_nonexistent_slug_returns_404(): void
@@ -119,7 +119,7 @@ class HttpSmokeTest extends TestCase
 
     public function test_admin_committee_index_returns_200(): void
     {
-        $this->get(route('admin.committee.index'))->assertOk();
+        $this->get(route('admin.committees.index'))->assertOk();
     }
 
     public function test_admin_events_index_returns_200(): void
@@ -151,7 +151,7 @@ class HttpSmokeTest extends TestCase
 
     public function test_admin_committee_create_returns_200(): void
     {
-        $this->get(route('admin.committee.create'))->assertOk();
+        $this->get(route('admin.committees.create'))->assertOk();
     }
 
     public function test_admin_events_create_returns_200(): void

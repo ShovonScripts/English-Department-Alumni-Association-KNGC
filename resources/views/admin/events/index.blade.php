@@ -104,7 +104,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         @if ($event->cover_image)
-                                            <img src="{{ $event->cover_image }}" alt="" class="h-10 w-10 shrink-0 rounded object-cover">
+                                            <img src="{{ $event->cover_image_url }}" alt="{{ $event->title }}" class="h-10 w-10 shrink-0 rounded object-cover">
                                         @else
                                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-navy-900 font-serif text-xs font-semibold text-gold-300" aria-hidden="true">
                                                 {{ \Illuminate\Support\Str::limit($event->title, 2, '') }}

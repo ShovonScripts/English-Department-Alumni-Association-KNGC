@@ -22,11 +22,11 @@ class ExpenseController extends Controller
         $query = Expense::query()
             ->with(['category', 'recordedBy'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('expense_number', 'like', "%{$search}%")
-                    ->orWhere('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('reference', 'like', "%{$search}%")
-                    ->orWhereHas('category', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+                $query->where('expense_number', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('description', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('reference', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhereHas('category', fn ($q) => $q->where('name', 'like', "%" . $this->escapeLike($search) . "%"));
             }))
             ->when($categoryId, fn ($query, $value) => $query->forCategory((int) $value))
             ->when($status, fn ($query, $value) => $query->where('status', $value))
@@ -146,6 +146,17 @@ class ExpenseController extends Controller
         return redirect()
             ->route('admin.expenses.show', $expense)
             ->with('status', "Expense {$expense->expense_number} voided. The record is retained for audit purposes.");
+    }
+
+    public function destroy(Expense $expense)
+    {
+        $expenseNumber = $expense->expense_number;
+
+        $expense->delete();
+
+        return redirect()
+            ->route('admin.expenses.index')
+            ->with('status', "Expense {$expenseNumber} has been permanently deleted.");
     }
 
     /**

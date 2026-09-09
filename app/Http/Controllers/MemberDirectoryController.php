@@ -29,11 +29,11 @@ class MemberDirectoryController extends Controller
             ->with(['alumni', 'type', 'tier'])
             ->when($search !== '', fn ($query) => $query->whereHas('alumni', function ($q) use ($search) {
                 $q->where(function ($q) use ($search) {
-                    $q->where('full_name', 'like', "%{$search}%")
-                        ->orWhere('student_id', 'like', "%{$search}%")
-                        ->orWhere('profession', 'like', "%{$search}%")
-                        ->orWhere('organization', 'like', "%{$search}%")
-                        ->orWhere('batch', 'like', "%{$search}%");
+                    $q->where('full_name', 'like', "%" . $this->escapeLike($search) . "%")
+                        ->orWhere('student_id', 'like', "%" . $this->escapeLike($search) . "%")
+                        ->orWhere('profession', 'like', "%" . $this->escapeLike($search) . "%")
+                        ->orWhere('organization', 'like', "%" . $this->escapeLike($search) . "%")
+                        ->orWhere('batch', 'like', "%" . $this->escapeLike($search) . "%");
                 });
             }))
             ->when($batch, fn ($query, $value) => $query->whereHas('alumni', fn ($q) => $q->where('batch', $value)))

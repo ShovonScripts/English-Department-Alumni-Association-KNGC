@@ -13,7 +13,7 @@
             'title' => 'Overview',
             'items' => [
                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'route_is' => 'admin.dashboard*', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
-                ['label' => 'Site Settings', 'route' => 'admin.settings.index', 'route_is' => 'admin.settings.*', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
+                ['label' => 'Site Settings', 'route' => 'admin.settings.index', 'route_is' => 'admin.settings.*', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.311 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
             ],
         ],
         [
@@ -24,7 +24,7 @@
                 ['label' => 'Members', 'route' => 'admin.members.index', 'route_is' => 'admin.members.*', 'icon' => 'M12 4.35a2.65 2.65 0 110 5.3 2.65 2.65 0 010-5.3zM5 21v-1.6A5.4 5.4 0 0110.4 14h3.2A5.4 5.4 0 0119 19.4V21m2-9.5l1.6 1.6M21 5.5L19.4 7M3 11.5L4.6 13.1M5 5.5L6.6 7.1'],
                 ['label' => 'Applications', 'route' => 'admin.membership-applications.index', 'route_is' => 'admin.membership-applications.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', 'badge' => $pendingApplicationCount > 0 ? $pendingApplicationCount : null, 'badge_color' => 'bg-amber-500'],
                 ['label' => 'Correction Requests', 'route' => 'admin.correction-requests.index', 'route_is' => 'admin.correction-requests.*', 'icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', 'badge' => $pendingCorrectionCount > 0 ? $pendingCorrectionCount : null, 'badge_color' => 'bg-rose-500'],
-                ['label' => 'Committees', 'route' => 'admin.committee-types.index', 'route_is' => 'admin.committee*', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
+                ['label' => 'Committees', 'route' => 'admin.committee-types.index', 'route_is' => 'admin.committee-types.*', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
                 ['label' => 'Membership Types', 'route' => 'admin.membership-types.index', 'route_is' => 'admin.membership-types.*', 'icon' => 'M7 7h10M7 11h6m-9 9V5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2z'],
                 ['label' => 'Membership Tiers', 'route' => 'admin.membership-tiers.index', 'route_is' => 'admin.membership-tiers.*', 'icon' => 'M5 3l4 6-4 12-4-12 4-6zm14 0l4 6-4 12-4-6 4-6zM12 9l3 4.5L12 21l-3-7.5L12 9z'],
             ],
@@ -62,6 +62,16 @@
             ],
         ],
         [
+            'title' => 'SEO & Meta',
+            'items' => [
+                ['label' => 'SEO Dashboard', 'route' => 'admin.seo.index', 'route_is' => 'admin.seo.index', 'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'],
+                ['label' => 'Global SEO Settings', 'route' => 'admin.seo.settings', 'route_is' => 'admin.seo.settings*', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.311 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
+                ['label' => 'Page Metadata', 'route' => 'admin.seo.pages', 'route_is' => 'admin.seo.pages*', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                ['label' => 'Sitemap', 'route' => 'admin.seo.sitemap', 'route_is' => 'admin.seo.sitemap*', 'icon' => 'M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2'],
+                ['label' => 'Robots.txt', 'route' => 'admin.seo.robots', 'route_is' => 'admin.seo.robots*', 'icon' => 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4'],
+            ],
+        ],
+        [
             'title' => 'Administration',
             'items' => [
                 ['label' => 'Admin Management', 'route' => 'admin.admins.index', 'route_is' => 'admin.admins.*', 'icon' => 'M12 4.35a2.65 2.65 0 110 5.3 2.65 2.65 0 010-5.3zM5 21v-1.6A5.4 5.4 0 0110.4 14h3.2A5.4 5.4 0 0119 19.4V21M9 21v-2a4 4 0 014-4h0a4 4 0 014 4v2'],
@@ -72,9 +82,8 @@
 @endphp
 
 <aside
-    x-cloak
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-    class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto bg-navy-950 border-r border-navy-800/80 text-navy-100 transition-transform duration-200 ease-out lg:static lg:z-auto lg:translate-x-0 lg:transition-none shadow-2xl lg:shadow-none scrollbar-thin scrollbar-thumb-navy-800"
+    id="admin-sidebar"
+    class="admin-sidebar fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto bg-navy-950 border-r border-navy-800/80 text-navy-100 transition-transform duration-200 ease-out lg:static lg:z-auto lg:translate-x-0 lg:transition-none shadow-2xl lg:shadow-none scrollbar-thin scrollbar-thumb-navy-800 -translate-x-full"
     aria-label="Admin sidebar"
 >
     {{-- Brand Header --}}
@@ -91,8 +100,8 @@
 
         <button
             type="button"
+            id="sidebar-close-button"
             class="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-lg text-navy-400 hover:text-white hover:bg-white/10 lg:hidden"
-            @click="sidebarOpen = false"
             aria-label="Close sidebar"
         >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -105,7 +114,7 @@
     <div class="px-4 pt-3 pb-1">
         <button
             type="button"
-            @click="$dispatch('open-command-palette')"
+            onclick="openCommandPalette()"
             class="flex w-full items-center justify-between rounded-xl bg-navy-900/80 hover:bg-navy-900 border border-navy-800/80 px-3.5 py-2 text-xs text-navy-300 transition-all duration-200 group hover:border-gold-500/40 shadow-inner"
         >
             <span class="flex items-center gap-2.5">

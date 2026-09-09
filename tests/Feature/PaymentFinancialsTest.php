@@ -10,7 +10,9 @@ use App\Models\MembershipTier;
 use App\Models\MembershipType;
 use App\Models\Payment;
 use App\Models\User;
+use Database\Seeders\AlumniSeeder;
 use Database\Seeders\FeePlanSeeder;
+use Database\Seeders\MembershipSeeder;
 use Database\Seeders\MembershipTypeSeeder;
 use Database\Seeders\PaymentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -241,6 +243,8 @@ class PaymentFinancialsTest extends TestCase
 
     public function test_membership_page_shows_fee_and_payment_summary(): void
     {
+        $this->actingAs($this->admin);
+
         $plan = $this->makePlan(['amount' => 1000]);
         $membership = $this->makeMembership($plan->membership_type_id);
 
@@ -253,7 +257,7 @@ class PaymentFinancialsTest extends TestCase
 
         $response = $this->get(route('admin.members.show', $membership));
         $response->assertOk();
-        $response->assertSee('Payment Summary');
+        $response->assertSee('Expected (Current Fee)');
         $response->assertSee('৳1,000');   // expected / outstanding context
         $response->assertSee('৳600');     // total collected
         $response->assertSee('৳400');     // outstanding
@@ -400,26 +404,11 @@ class PaymentFinancialsTest extends TestCase
     public function test_payment_seeder_creates_realistic_records_and_is_idempotent(): void
     {
         // Build the prerequisites the seeder expects: membership types, fee
-        // plans, and memberships for the named demo members.
+        // plans, alumni, and memberships for the named demo members.
         $this->seed(MembershipTypeSeeder::class);
         $this->seed(FeePlanSeeder::class);
-
-        $types = MembershipType::query()->pluck('id', 'slug');
-        $members = [
-            ['adaeze-okafor', 'Adaeze Okafor', 'general-member'],
-            ['halima-balogun', 'Halima Balogun', 'general-member'],
-            ['chidi-eze', 'Chidi Eze', 'executive-committee-member'],
-            ['fatima-haddad', 'Fatima Haddad', 'honorary-member'],
-            ['tunde-balogun', 'Tunde Balogun', 'general-member'],
-        ];
-
-        foreach ($members as [$slug, $name, $typeSlug]) {
-            $alumnus = Alumni::factory()->create(['slug' => $slug, 'full_name' => $name]);
-            Membership::factory()->create([
-                'alumni_id' => $alumnus->id,
-                'membership_type_id' => $types[$typeSlug],
-            ]);
-        }
+        $this->seed(AlumniSeeder::class);
+        $this->seed(MembershipSeeder::class);
 
         $this->seed(PaymentSeeder::class);
 

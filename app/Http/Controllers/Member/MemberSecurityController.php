@@ -30,6 +30,8 @@ class MemberSecurityController extends Controller
             'password' => Hash::make($request->password),
         ])->save();
 
+        $request->session()->regenerate();
+
         return redirect()->route('member.security')->with('success', 'Password updated successfully.');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Minimal key/value site settings store used for site-level switches such as
@@ -27,9 +28,11 @@ class SiteSetting extends Model
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        $value = static::query()->where('key', $key)->value('value');
+        return Cache::remember('site_setting:'.$key, 300, function () use ($key, $default) {
+            $value = static::query()->where('key', $key)->value('value');
 
-        return $value ?? $default;
+            return $value ?? $default;
+        });
     }
 
     /**
@@ -41,6 +44,8 @@ class SiteSetting extends Model
             ['key' => $key],
             ['value' => (string) $value]
         );
+
+        Cache::forget('site_setting:'.$key);
     }
 
     /**

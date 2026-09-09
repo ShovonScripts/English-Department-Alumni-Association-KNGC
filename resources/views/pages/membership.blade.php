@@ -172,7 +172,7 @@
                 </div>
                 <div class="space-y-4 text-sm leading-relaxed text-ink-soft">
                     <p>
-                        Your privacy is paramount. Information submitted in your membership application is used exclusively by the EDAA-KNGC Executive Committee for verification and Association welfare purposes.
+                        Your privacy matters. Information submitted in your membership application is used solely by the EDAA-KNGC Executive Committee for verification and Association welfare purposes.
                     </p>
                     <p>
                         Members maintain full control over their public alumni directory visibility through their Member Portal settings. Contact details, national identification, and administrative audit records are strictly confidential and never shared publicly.

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CorrectionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CorrectionRequestController extends Controller
@@ -12,7 +13,7 @@ class CorrectionRequestController extends Controller
     public function index(Request $request)
     {
         $requests = CorrectionRequest::with('alumni')
-            ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected')")
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 WHEN status = 'approved' THEN 1 ELSE 2 END")
             ->latest()
             ->paginate(15);
 
@@ -40,17 +41,32 @@ class CorrectionRequestController extends Controller
         // Type-specific validation on the requested value.
         $this->validateValue($correctionRequest->requested_field, $correctionRequest->requested_value);
 
-        $correctionRequest->alumni->update([
-            $correctionRequest->requested_field => $correctionRequest->requested_value,
-        ]);
+        if (! $correctionRequest->alumni) {
+            return back()->withErrors(['status' => 'The linked alumni record no longer exists.']);
+        }
 
-        $correctionRequest->update([
-            'status' => CorrectionRequest::STATUS_APPROVED,
-            'reviewed_by' => auth()->id(),
-            'reviewed_at' => now(),
-        ]);
+        DB::beginTransaction();
 
-        return back()->with('success', 'Correction request approved and alumni profile updated.');
+        try {
+            $correctionRequest->alumni->update([
+                $correctionRequest->requested_field => $correctionRequest->requested_value,
+            ]);
+
+            $correctionRequest->update([
+                'status' => CorrectionRequest::STATUS_APPROVED,
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Correction request approved and alumni profile updated.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            report($e);
+
+            return back()->withErrors(['status' => 'Approval failed due to an internal error. Please try again.']);
+        }
     }
 
     public function reject(CorrectionRequest $correctionRequest)

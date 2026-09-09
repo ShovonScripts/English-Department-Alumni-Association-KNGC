@@ -22,16 +22,16 @@ class EventController extends Controller
 
         $events = Event::query()
             ->with('category')
-            ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('venue', 'like', "%{$search}%")
-                    ->orWhere('organizer', 'like', "%{$search}%");
+            ->when($search !== '', fn($query) => $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('venue', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('organizer', 'like', "%" . $this->escapeLike($search) . "%");
             }))
-            ->when($categoryId, fn ($query, $categoryId) => $query->where('category_id', $categoryId))
-            ->when($status, fn ($query, $status) => $query->where('status', $status))
-            ->when($featured !== null && $featured !== '', fn ($query) => $query->where('is_featured', filter_var($featured, FILTER_VALIDATE_BOOL)))
-            ->when($timing === 'upcoming', fn ($query) => $query->upcoming())
-            ->when($timing === 'past', fn ($query) => $query->past())
+            ->when($categoryId, fn($query, $categoryId) => $query->where('category_id', $categoryId))
+            ->when($status, fn($query, $status) => $query->where('status', $status))
+            ->when($featured !== null && $featured !== '', fn($query) => $query->where('is_featured', filter_var($featured, FILTER_VALIDATE_BOOL)))
+            ->when($timing === 'upcoming', fn($query) => $query->upcoming())
+            ->when($timing === 'past', fn($query) => $query->past())
             ->orderByDesc('event_date')
             ->paginate(15)
             ->withQueryString();
@@ -100,14 +100,15 @@ class EventController extends Controller
         $data['category_id'] = $data['category_id'] ?? null;
 
         if ($request->hasFile('cover_image')) {
-            if ($event->cover_image) {
-                \App\Services\SharedFileGuard::deleteIfUnreferenced($event->cover_image, $event->id, 'events');
-            }
-
+            $oldCoverImage = $event->cover_image;
             $data['cover_image'] = $request->file('cover_image')->store('events', 'public');
         }
 
         $event->update($data);
+
+        if (isset($oldCoverImage)) {
+            SharedFileGuard::deleteIfUnreferenced($oldCoverImage, $event->id, 'events');
+        }
 
         return redirect()
             ->route('admin.events.index')
@@ -153,7 +154,7 @@ class EventController extends Controller
             'cover_image' => [
                 'nullable',
                 'sometimes',
-                                File::image()
+                File::image()
                     ->max('8mb')
                     ->dimensions(Rule::dimensions()->maxWidth(5000)->maxHeight(5000)),
             ],

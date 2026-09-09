@@ -17,8 +17,8 @@ class GalleryAlbumController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                $q->where('title', 'like', "%" . $this->escapeLike($search) . "%")
+                    ->orWhere('description', 'like', "%" . $this->escapeLike($search) . "%");
             });
         }
 

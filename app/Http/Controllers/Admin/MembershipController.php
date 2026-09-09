@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Alumni;
 use App\Models\Membership;
 use App\Models\MembershipTier;
 use App\Models\MembershipType;
+use App\Models\FeePlan;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,12 @@ class MembershipController extends Controller
 {
     public function verify(Membership $membership)
     {
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        if (! $alumni) {
+            return back()->with('error', 'No alumni record linked to this membership.');
+        }
+
+        $user = $alumni->user;
         if ($user) {
             $user->forceFill([
                 'verified_at' => now(),
@@ -28,7 +35,12 @@ class MembershipController extends Controller
 
     public function unverify(Membership $membership)
     {
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        if (! $alumni) {
+            return back()->with('error', 'No alumni record linked to this membership.');
+        }
+
+        $user = $alumni->user;
         if ($user) {
             $user->forceFill([
                 'verified_at' => null,
@@ -41,7 +53,12 @@ class MembershipController extends Controller
 
     public function disable(Membership $membership)
     {
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        if (! $alumni) {
+            return back()->with('error', 'No alumni record linked to this membership.');
+        }
+
+        $user = $alumni->user;
         if ($user) {
             $user->forceFill(['status' => 'disabled'])->save();
         }
@@ -51,7 +68,12 @@ class MembershipController extends Controller
 
     public function enable(Membership $membership)
     {
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        if (! $alumni) {
+            return back()->with('error', 'No alumni record linked to this membership.');
+        }
+
+        $user = $alumni->user;
         if ($user) {
             $user->forceFill(['status' => 'active'])->save();
         }
@@ -69,10 +91,10 @@ class MembershipController extends Controller
         $memberships = Membership::query()
             ->with(['alumni', 'type', 'tier'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
-                $query->where('membership_number', 'like', "%{$search}%")
+                $query->where('membership_number', 'like', "%" . $this->escapeLike($search) . "%")
                     ->orWhereHas('alumni', fn ($q) => $q->where(function ($q) use ($search) {
-                        $q->where('full_name', 'like', "%{$search}%")
-                            ->orWhere('student_id', 'like', "%{$search}%");
+                        $q->where('full_name', 'like', "%" . $this->escapeLike($search) . "%")
+                            ->orWhere('student_id', 'like', "%" . $this->escapeLike($search) . "%");
                     }));
             }))
             ->when($status, fn ($query, $value) => $query->where('status', $value))
@@ -142,10 +164,14 @@ class MembershipController extends Controller
             ->limit(5)
             ->get();
 
+        $plan = FeePlan::currentForType($membership->membership_type_id);
+        $summary = $plan ? Payment::obligationFor($membership->id, $plan) : null;
+
         return view('admin.members.show', [
             'membership' => $membership,
             'recentPayments' => $recentPayments,
             'paymentCount' => $membership->payments()->valid()->count(),
+            'summary' => $summary,
         ]);
     }
 
@@ -204,7 +230,8 @@ class MembershipController extends Controller
         $membership->update(['status' => Membership::STATUS_SUSPENDED]);
 
         // Also disable the associated user account to block portal access.
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        $user = $alumni?->user;
         if ($user) {
             $user->forceFill(['status' => 'disabled'])->save();
         }
@@ -220,7 +247,8 @@ class MembershipController extends Controller
         $membership->syncApprovalStamp();
 
         // Re-enable the associated user account to restore portal access.
-        $user = $membership->alumni->user;
+        $alumni = $membership->alumni;
+        $user = $alumni?->user;
         if ($user) {
             $user->forceFill(['status' => 'active'])->save();
         }
