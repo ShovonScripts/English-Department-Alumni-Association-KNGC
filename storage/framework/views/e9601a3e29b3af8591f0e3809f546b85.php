@@ -1,0 +1,169 @@
+<?php
+    $album = $album ?? null;
+    $inputClass = 'w-full rounded-md border border-navy-300 bg-white px-4 py-2.5 text-sm text-navy-950 placeholder-navy-400 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 focus:outline-none';
+?>
+
+
+<section class="rounded-lg border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+    <h2 class="font-serif text-xl font-semibold text-navy-950">Album Information</h2>
+    <p class="mt-1 text-sm text-ink-soft">Core details about the album.</p>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+            <label for="title" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Title *</label>
+            <input type="text" id="title" name="title" value="<?php echo e(old('title', $album?->title)); ?>" required placeholder="e.g. Alumni Reunion 2026" class="<?php echo e($inputClass); ?> <?php echo e($errors->has('title') ? 'border-maroon-400 ring-2 ring-maroon-500/20' : ''); ?>">
+            <?php $__errorArgs = ['title'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="sm:col-span-2">
+            <label for="description" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Description</label>
+            <textarea id="description" name="description" rows="4" class="<?php echo e($inputClass); ?>"><?php echo e(old('description', $album?->description)); ?></textarea>
+            <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div>
+            <label for="event_id" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Event</label>
+            <select id="event_id" name="event_id" class="<?php echo e($inputClass); ?>">
+                <option value="">No event</option>
+                <?php $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($event->id); ?>" <?php if(old('event_id', $album?->event_id) == $event->id): echo 'selected'; endif; ?>><?php echo e($event->title); ?> — <?php echo e($event->event_date?->format('M j, Y')); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+            <?php $__errorArgs = ['event_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+    </div>
+</section>
+
+
+<section class="mt-6 rounded-lg border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+    <h2 class="font-serif text-xl font-semibold text-navy-950">Display</h2>
+    <p class="mt-1 text-sm text-ink-soft">Control visibility and ordering.</p>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+            <label for="status" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Status *</label>
+            <select id="status" name="status" class="<?php echo e($inputClass); ?>">
+                <option value="published" <?php if(old('status', $album?->status ?? 'published') === 'published'): echo 'selected'; endif; ?>>Published — visible publicly</option>
+                <option value="hidden" <?php if(old('status', $album?->status ?? 'published') === 'hidden'): echo 'selected'; endif; ?>>Hidden — not visible publicly</option>
+            </select>
+            <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div>
+            <label for="sort_order" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Sort Order</label>
+            <input type="number" id="sort_order" name="sort_order" value="<?php echo e(old('sort_order', $album?->sort_order ?? 0)); ?>" min="0" class="<?php echo e($inputClass); ?>">
+            <?php $__errorArgs = ['sort_order'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+    </div>
+</section>
+
+
+<section class="mt-6 rounded-lg border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+    <h2 class="font-serif text-xl font-semibold text-navy-950">Media</h2>
+    <p class="mt-1 text-sm text-ink-soft">Cover image for the album.</p>
+
+    <div class="mt-6">
+        <label for="cover_image" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft">Cover Image</label>
+            <div class="flex items-center gap-4">
+                <img id="preview-img" src="<?php echo e($album?->cover_image_url ?? ''); ?>" alt="" class="h-24 w-40 rounded-lg object-cover ring-4 ring-gold-500/30 <?php echo e($album?->cover_image_url ? '' : 'hidden'); ?>">
+                <span id="preview-fallback" class="flex h-24 w-40 items-center justify-center rounded-lg border-2 border-dashed border-navy-200 bg-cream text-xs text-ink-soft <?php echo e($album?->cover_image_url ? 'hidden' : ''); ?>" aria-hidden="true">
+                    No image
+                </span>
+                <input
+                    type="file"
+                    id="cover_image"
+                    name="cover_image"
+                    accept="image/*"
+                    class="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-navy-900 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-800"
+                >
+            </div>
+            <p class="mt-2 text-xs text-ink-soft">JPEG, PNG or WebP, up to 8MB.</p>
+            <?php $__errorArgs = ['cover_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-1.5 text-xs font-medium text-maroon-700"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+        <?php if($album?->cover_image): ?>
+            <label class="mt-3 inline-flex items-center gap-2">
+                <input type="checkbox" name="clear_image" value="1" class="h-4 w-4 rounded border-navy-300 text-maroon-700 focus:ring-maroon-500">
+                <span class="text-sm text-navy-950">Remove current image</span>
+            </label>
+        <?php endif; ?>
+    </div>
+</section>
+
+<?php $__env->startPush('scripts'); ?>
+    <script>
+    (function() {
+        const input = document.getElementById('cover_image');
+        const img = document.getElementById('preview-img');
+        const fallback = document.getElementById('preview-fallback');
+        if (input && img) {
+            input.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        img.classList.remove('hidden');
+                        if (fallback) fallback.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    })();
+    </script>
+<?php $__env->stopPush(); ?>
+<?php /**PATH C:\xampp\htdocs\ProDo\EDAA\resources\views/admin/gallery/_form.blade.php ENDPATH**/ ?>
